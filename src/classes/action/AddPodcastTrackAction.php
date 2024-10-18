@@ -19,8 +19,8 @@ class AddPodcastTrackAction extends Action
             $base_sys = realpath($_SERVER['DOCUMENT_ROOT']);  // C:\xampp\htdocs pour STOCKER LES FICHIERS
             $base_access = "http://" . $_SERVER['HTTP_HOST'];  // http://localhost/ pour ACCEDER AUX FICHIERS COTE CLIENT
 
-            $upload_dir = $base_sys . "\DevWebS3\TD12\audio\\";  // C:\xampp\htdocs\DevWebS3\TD12\audio\  pour STOCK
-            $access_dir = $base_access . "\DevWebS3\TD12\audio\\";  // http://localhost/DevWebS3\TD12\audio\  pour ACCES
+            $upload_dir = $base_sys . "\DevWebS3\DeefyProject\audio\\";  // C:\xampp\htdocs\DevWebS3\DeefyProject\audio\  pour STOCK
+            $access_dir = $base_access . "\DevWebS3\DeefyProject\audio\\";  // http://localhost/DevWebS3\DeefyProject\audio\  pour ACCES
             $filename = uniqid();
 
             $autorise = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav', 'audio/aac'];

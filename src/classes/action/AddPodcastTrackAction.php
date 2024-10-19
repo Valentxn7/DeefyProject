@@ -71,20 +71,23 @@ class AddPodcastTrackAction extends Action
                     <h2>Ajouter un épisode de podcast à la playlist</h2><br>
                     <form id="form-add-track" action="TD12.php?action=add-track" method="POST" enctype="multipart/form-data">
                 
-                        <label for="title">Titre : </label>
-                        <input type="text" id="title" name="title" value="Mon titre"> <br>
-                    
-                        <label for="artist">Créateur : </label>
-                        <input type="text" id="artist" name="artist"> <br>
-                    
-                        <label for="date">Date : </label>
-                        <input type="text" id="date" name="date"> <br>
+                    <description>
+                        <summary>
+                            <label for="title">Titre : </label>
+                            <input type="text" id="title" name="title"> <br>
                         
-                        <label for="genre">Genre : </label>
-                        <input type="text" id="genre" name="genre"> <br>
+                            <label for="artist">Créateur : </label>
+                            <input type="text" id="artist" name="artist"> <br>
                         
-                        <label for="duree">Durée : </label>
-                        <input type="text" id="duree" name="duree"> <br><br>  <!-- A RETIRER PAR LA DUREE DU FICH -->
+                            <label for="date">Date : </label>
+                            <input type="text" id="date" name="date"> <br>
+                            
+                            <label for="genre">Genre : </label>
+                            <input type="text" id="genre" name="genre"> <br>
+                            
+                            </summary> <br>
+                        </description> <br>
+                        
                     
                         <label for="inputfile">Fichier : </label>
                         <input type="file" id="inputfile" name="inputfile" required> <br><br>
@@ -114,11 +117,11 @@ HTML;
 
         // ne pas confondre isset et is_null : isset sera tjr vrai car post envoyé !! is_null sera vrai si pas de valeurs
 
-        $_POST['genre'] = is_null($_POST['genre']) ? filter_var($_POST['genre'], FILTER_SANITIZE_STRING) : $fileInfo['tags']['id3v2']['genre'][0] ?? AudioList::NO_GENRE;
+        $_POST['genre'] = is_null($_POST['genre'])  || isset($_POST['genre']) ? filter_var($_POST['genre'], FILTER_SANITIZE_STRING) : filter_var($fileInfo['tags']['id3v2']['genre'][0], FILTER_SANITIZE_STRING) ?? AudioList::NO_GENRE;
 
-        $_POST['artist'] = is_null($_POST['artist']) ? filter_var($_POST['artist'], FILTER_SANITIZE_STRING) : $fileInfo['tags']['id3v2']['artist'][0] ?? AudioList::NO_AUTEUR;
+        $_POST['artist'] = is_null($_POST['artist']) ? filter_var($_POST['artist'], FILTER_SANITIZE_STRING) :filter_var($fileInfo['tags']['id3v2']['artist'][0], FILTER_SANITIZE_STRING) ?? AudioList::NO_AUTEUR;
 
-        $_POST['date'] = is_null($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_STRING) : $fileInfo['tags']['id3v2']['year'][0] ?? AudioList::NO_DATE;
+        $_POST['date'] = is_null($_POST['date']) || isset($_POST['date'])? filter_var($_POST['date'], FILTER_SANITIZE_STRING) : filter_var($fileInfo['tags']['id3v2']['year'][0], FILTER_SANITIZE_STRING)  ?? AudioList::NO_DATE;
         // TODO TT SANETISER
         $_POST['duree'] = (int) filter_var((float) $fileInfo['playtime_seconds'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);  // FILTER_FLAG_ALLOW_FRACTION sinon enleve le . des MS et fait un nombre a 6 chiffres
 

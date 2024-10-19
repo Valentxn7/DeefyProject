@@ -4,7 +4,9 @@ namespace iutnc\deefy\dispatch;
 
 use iutnc\deefy\action\AddPlaylistAction;
 use iutnc\deefy\action\AddPodcastTrackAction;
+use iutnc\deefy\action\AddUserAction;
 use iutnc\deefy\action\DefaultAction;
+use iutnc\deefy\action\DestroyPlaylistAction;
 use iutnc\deefy\action\DisplayPlaylistAction;
 
 class Dispatcher
@@ -21,27 +23,28 @@ class Dispatcher
         switch ($this->action) {
             case 'default':
                 $act = new DefaultAction();
-                $this->renderPage($act->execute());
                 break;
             case 'playlist':
                 $act = new DisplayPlaylistAction();  // 3EME
-                $this->renderPage($act->execute());
                 break;
             case 'add-playlist':
                 $act = new AddPlaylistAction();  // 1ER
-                $this->renderPage($act->execute());
                 break;
             case 'add-track':
                 $act = new AddPodcastTrackAction();  // 2EME
-                $this->renderPage($act->execute());
+                break;
+            case 'add-user':
+                $act = new AddUserAction();
                 break;
             case 'destroy':
                 $act = new DestroyPlaylistAction();
-                $this->renderPage($act->execute());
                 break;
             default:
                 $this->renderPage("Action inconnue");
+                break;
         }
+        if (isset($act))
+            $this->renderPage($act->execute());
     }
 
     private function renderPage(string $html): void

@@ -19,7 +19,7 @@ class AudioListRenderer implements Renderer
         if (sizeof($this->audioList->liste) === 0) {
             return "La playlist {$this->audioList->nom} est vide";
         } else {
-            $cont = "<br> {$this->audioList->nom} <br>";
+            $cont = "<br> <b>{$this->audioList->nom} </b><br>";
             for ($i = 0; $i < sizeof($this->audioList->liste); $i++) {
                 /*echo "<br><br>";
                 echo var_dump($this->audioList->liste[$i]);
@@ -28,7 +28,11 @@ class AudioListRenderer implements Renderer
                 $cont .= $albrend->render(Renderer::COMPACT);
             }
             $cont .= "<br>nb pistes: " . $this->audioList->nbpiste;
-            $cont .= "<br>durée: " . $this->audioList->duree;
+
+            $duree_seconds = $this->audioList->duree;  // Formate en MM:SS
+            $minutes = floor($duree_seconds / 60);
+            $seconds = $duree_seconds % 60;
+            $cont .= "<br>durée: " . $minutes . ":" . $seconds;
             return $cont;
         }
     }

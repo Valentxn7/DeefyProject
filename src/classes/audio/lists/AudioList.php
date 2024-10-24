@@ -12,6 +12,7 @@ abstract class AudioList
     protected string $nom;
     protected int $nbpiste, $duree;
     protected array $liste;
+    protected int $id_bdd;
 
     public function __construct(string $name, array $arr = [])
     {

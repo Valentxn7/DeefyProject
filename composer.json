@@ -5,7 +5,8 @@
 
   "require": {
     "php": ">=7.4",
-    "james-heinrich/getid3": "^1.9"
+    "james-heinrich/getid3": "^1.9",
+    "ext-pdo": "*"
   },
 
   "autoload": {

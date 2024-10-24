@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab5ec04c5cf4b6c822b2dbab89b92bc0",
+    "content-hash": "ec4a39ae9d818553bc605790c6ab5ddc",
     "packages": [
         {
             "name": "james-heinrich/getid3",
@@ -81,7 +81,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.2"
+        "php": ">=7.4",
+        "ext-pdo": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"

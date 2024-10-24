@@ -11,6 +11,7 @@ abstract class AudioTrack
 {
     protected string $titre, $genre, $nom_fich;
     protected int $duree;
+    protected int $id_bdd;
 
     public function __construct(string $titre_piste, string $path)
     {

@@ -3,6 +3,7 @@
 namespace iutnc\deefy\action;
 
 use iutnc\deefy\action\Action;
+use iutnc\deefy\repository\DeefyRepository;
 
 /**
  * Créer la classe AddUserAction puis ajouter le cas $action = 'add-user' dans le sélecteur
@@ -16,6 +17,9 @@ use iutnc\deefy\action\Action;
 class AddUserAction extends Action
 {
 
+    /**
+     * @throws \Exception
+     */
     public function execute(): string
     {
         if ($this->http_method == "POST") {
@@ -25,7 +29,14 @@ class AddUserAction extends Action
             } else {
                 $ret = "<h2> Votre compte a été créé</h2><br><br>";
                 $ret .= "Nom: {$_POST['name']}, Email: {$_POST['email']}, Age: {$_POST['age']} ans";
-                return $ret;
+                $rapport = DeefyRepository::getInstance()->addUser($_POST['email'], $_POST['password'], $_POST['name']);
+                if ($rapport == "OK")
+                    return $ret;
+                else if ($rapport == "already") {
+                    return "Un compte existe déjà avec cet email.";
+                } else {
+                    return "Erreur lors de la création du compte.";
+                }
             }
 
 

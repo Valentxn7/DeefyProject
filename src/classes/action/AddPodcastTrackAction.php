@@ -56,18 +56,7 @@ class AddPodcastTrackAction extends Action
 
         } else if ($this->http_method == "GET") {
             $ret = <<<HTML
-                    <style>
-                        details summary {
-                            cursor: pointer;
-                            padding: 5px;
-                            background-color: #f3f3f3;
-                            border-radius: 5px;
-                        }
-                        details[open] summary {
-                            background-color: #e0e0e0;
-                        }
-                    </style>
-                    <h2>Ajouter un épisode de podcast à la playlist</h2><br>
+                    <h2>Ajouter un podcast à la playlist</h2><br>
                     <form id="form-add-track" action="TD12.php?action=add-track" method="POST" enctype="multipart/form-data">
                
                         <label for="inputfile">Fichier : </label>
@@ -91,7 +80,7 @@ class AddPodcastTrackAction extends Action
                             
                         </details> <br>
                         
-                        <input type="submit" value="Ajouter l'épisode à la playlist" style="background-color: #4CAF50; color: white; padding: 9px; border: none; border-radius: 5px; cursor: pointer;"> <br>
+                        <input id="inputTrack" type="submit" value="Ajouter l'épisode à la playlist" > <br>
                         
                     </form > <br><br>               
 

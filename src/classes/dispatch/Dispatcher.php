@@ -8,6 +8,8 @@ use iutnc\deefy\action\AddUserAction;
 use iutnc\deefy\action\DefaultAction;
 use iutnc\deefy\action\DestroyPlaylistAction;
 use iutnc\deefy\action\DisplayPlaylistAction;
+use iutnc\deefy\action\LoginAction;
+use iutnc\deefy\repository\DeefyRepository;
 
 class Dispatcher
 {
@@ -36,6 +38,9 @@ class Dispatcher
             case 'add-user':
                 $act = new AddUserAction();
                 break;
+            case 'login':
+                $act = new LoginAction();
+                break;
             case 'destroy':
                 $act = new DestroyPlaylistAction();
                 break;
@@ -47,8 +52,65 @@ class Dispatcher
             $this->renderPage($act->execute());
     }
 
+
     private function renderPage(string $html): void
     {
+        DeefyRepository::getInstance()->VerifToken();
+        if (empty($_SESSION['user_info']['nom'])) {
+            $username = "Invité";
+            $logInOrOut = "<li><a href='?action=login'>Connexion</a></li>";
+        } else {
+            $username = $_SESSION['user_info']['nom'];
+            $logInOrOut = "<li><a href='?action=logout'>Déconnexion</a></li>";
+        }
+
+        $ret = <<<HTML
+    <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deefy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Deefy</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="?action=default">Accueil</a></li>
+                <li><a href="?action=playlist">Playlists</a></li>
+                <li><a href="?action=add-playlist">Ajouter Playlist</a></li>
+                <li><a href="?action=add-track">Ajouter Piste</a></li>
+                {$logInOrOut}
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="content">
+            {$html}
+        </div>
+    </main>
+    <footer>
+        <p>&copy; <?php echo date("Y"); ?> Deefy. Tous droits réservés.</p>
+    </footer>
+</body>
+</html>
+HTML;
+        echo $ret;
+    }
+
+
+    private function renderPage_old(string $html): void
+    {
+        if (empty($_SESSION['user_info']['nom'])) {
+            $username = "unknow ! ";
+        } else {
+            $username = " " . $_SESSION['user_info']['nom'];
+        }
+        DeefyRepository::getInstance()->VerifToken();
         $ret = <<<HTML
             <!DOCTYPE html>
             <html lang='fr'>
@@ -87,7 +149,7 @@ class Dispatcher
             </head>
             <body>
                 <header>
-                    <h1>Bienvenue sur Mon Application</h1>
+                    <h1>Bienvenue sur Deefy $username</h1>
                     <nav>
                         <a href='?action=default' style='color: white; margin: 0 15px;'>Accueil</a>
                         <a href='?action=playlist' style='color: white; margin: 0 15px;'>Afficher Playlists</a>

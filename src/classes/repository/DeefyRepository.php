@@ -2,8 +2,12 @@
 
 namespace iutnc\deefy\repository;
 
+use iutnc\deefy\action\DefaultAction;
 use iutnc\deefy\audio\lists\Playlist;
 use iutnc\deefy\audio\tracks\PodcastTrack;
+use iutnc\deefy\dispatch\Dispatcher;
+use iutnc\deefy\exception\AuthException;
+use Random\RandomException;
 
 class DeefyRepository
 {
@@ -75,6 +79,9 @@ class DeefyRepository
 
     }
 
+    /**
+     * @return array de la bdd
+     */
     public function allPlaylistRAW(): array
     {
         $query = "SELECT * FROM playlist";
@@ -82,6 +89,9 @@ class DeefyRepository
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * @return array d'objets Playlist
+     */
     public function allPlaylistConverted(): array
     {
         $query = "SELECT * FROM playlist";
@@ -100,7 +110,7 @@ class DeefyRepository
 
     public function addUser(string $email, string $password, string $username): string
     {
-        if ($this->findUser($email)) {
+        if ($this->checkUser($email)) {
             return 'a';  // already
         } else {
             $hash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);  // 2^12 itérations de hashage
@@ -109,7 +119,7 @@ class DeefyRepository
             $stmt = $this->pdo->prepare($query);
             if ($stmt->execute(['email' => $email, 'password' => $hash, 'username' => $username, 'role' => 1])) {
                 $this->AfterLoginUser($this->pdo->lastInsertId());  // atribution du token
-                $this->VerifToken();
+                $_SESSION['user_info'] = ['id' => $this->pdo->lastInsertId(), 'nom' => $username];
                 return "OK";
             } else
                 return "KO";
@@ -120,13 +130,13 @@ class DeefyRepository
     {
         $query = "DELETE FROM user WHERE id = :id_user";
         $stmt = $this->pdo->prepare($query);
-        if ($stmt->execute(['id_ser' => $_SESSION['user_info']['id']])) {
+        if ($stmt->execute(['id_user' => $_SESSION['user_info']['id']])) {
             $this->logoutUser();
         }
         // TODO : Supprimer les playlists et les pistes associées
     }
 
-    public function findUser(string $email): bool
+    public function checkUser(string $email): bool
     {
         $query = "SELECT * FROM user WHERE email = :email";
         $stmt = $this->pdo->prepare($query);
@@ -185,7 +195,7 @@ class DeefyRepository
                 $_SESSION['user_info'] = ['id' => $userId, 'nom' => $username];
                 return true;
             } else
-                setcookie('remember_me', '', time() - 3600, '/', '', true, true); // Token expiré, supprime le cookie
+                setcookie('remember_me', '', time() + 3, '/', ''); // Token expiré, supprime le cookie
         }
         return false;
     }
@@ -200,27 +210,37 @@ class DeefyRepository
             $stmt = $this->pdo->prepare($query);
             $stmt->execute(['token' => $token]);
 
-            setcookie('remember_me', '', time() - 3600, '/', '', true, true); // Supprime le cookie
+            setcookie('remember_me', '', time() + 2, '/', ''); // Supprime le cookie
         }
         // Supprime la session
         session_unset();
         session_destroy();
+
+        // redirige vers la page d'accueil
+        $_GET['action'] = 'default';
+        $dispatcher = new Dispatcher();
+        $dispatcher->run();
     }
 
-    public static function login(string $email, string $passwd2check): bool
+    public function login(string $email, string $passwd2check): bool
     {
-        $query = "select passwd from user where email = :email";
+        $query = "SELECT id, passwd, username from user where email = :email";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(['email' => $email]);
-        if (($hash = $stmt->fetchColumn(0)) == false) {
-            throw new AuthException("Auth error : invalid credentials");
+
+        if (!($result = $stmt->fetchColumn(0))) {  // si on n'a pas de result = pas d'email
+            return false;
         } else {
-            if (!password_verify($passwd2check, $hash))
-                throw new AuthException("Auth error : invalid credentials");
-            else
+            if (!password_verify($passwd2check, $result->passwd))
+                return false;
+            else{
+                $_SESSION['user_info'] = ['id' => $this->pdo->lastInsertId(), 'nom' => $result->username];
+                $this->AfterLoginUser($result->id); // token
                 return true;
+            }
+
+
         }
-        return false;
     }
 
 }

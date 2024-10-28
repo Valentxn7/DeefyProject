@@ -17,39 +17,34 @@ class LoginAction extends Action
     {
         if ($this->http_method == "POST") {
             $rapport = $this->sanitize();
-            if ($rapport != "OK") {
+            if ($rapport != "OK")
                 return $rapport;
-            } else {
+            else {
                 // Vérifier les informations d'identification
                 $email = $_POST['email'];
                 $password = $_POST['password'];
 
-                $user = DeefyRepository::getInstance()->findUser($email);
-
-                if ($user && password_verify($password, $user['passwd'])) {
-                    // Si les informations d'identification sont correctes
-                    $_SESSION['user_info'] = [
-                        'id' => $user['id'],
-                        'nom' => $user['username']
-                    ];
-                    return "<h2>Connexion réussie</h2><br>Bienvenue, {$user['username']}!";
-                } else {
-                    return "Identifiants invalides.";
-                }
+                if (!DeefyRepository::getInstance()->login($email, $password))
+                    return "Adresse email ou mot de passe incorrect";
+                else
+                    return "<h2>Connexion réussie</h2><br>Bienvenue, {$_SESSION['user_info']['nom']} !";
             }
-        } else if ($this->http_method == "GET") {
-            // Afficher le formulaire de connexion
-            return $this->renderLoginForm();
+        } else {
+            if ($this->http_method == "GET") {
+                return $this->renderLoginForm();
+            }
         }
+        return "";  // Ne devrait jamais arriver car http method testé dans dispatcher
     }
 
-    public function renderLoginForm(): string
-    {
-        return <<<HTML
+        private
+        function renderLoginForm(): string
+        {
+            return <<<HTML
             <h2>Connexion</h2><br>
             <form id="form-login" action="TD12.php?action=login" method="POST">
                 <label for="email">Email : </label>
-                <input type="email" id="email" name="email" required autocomplete="email" title="Veuillez entrer une adresse email valide"> <br>
+                <input type="email" id="email" name="email" required autocomplete="email"> <br>
                 
                 <label for="password">Mot de passe : </label>
                 <input type="password" id="password" name="password" required> <br><br>
@@ -57,27 +52,29 @@ class LoginAction extends Action
                 <input type="submit" value="Se connecter"> <br>
             </form><br><br>
 HTML;
+        }
+
+        private
+        function sanitize(): string
+        {
+            if (!isset($_POST['email']) || !isset($_POST['password'])) {
+                return "Tous les champs sont obligatoires.";
+            }
+
+            if (is_null($_POST['email']) || is_null($_POST['password'])) {
+                return "Tous les champs sont obligatoires.";
+            }
+
+            // Filtrer l'email
+            if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+                return "Adresse email invalide.";
+            }
+            $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+
+            // Filtrer le mot de passe
+            $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+
+            return "OK";
+        }
     }
 
-    public function sanitize(): string
-    {
-        if (!isset($_POST['email']) || !isset($_POST['password'])) {
-            return "Tous les champs sont obligatoires.";
-        }
-
-        if (is_null($_POST['email']) || is_null($_POST['password'])) {
-            return "Tous les champs sont obligatoires.";
-        }
-
-        // Filtrer l'email
-        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-            return "Adresse email invalide.";
-        }
-        $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-
-        // Filtrer le mot de passe
-        $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
-
-        return "OK";
-    }
-}

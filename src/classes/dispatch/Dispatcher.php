@@ -20,36 +20,47 @@ class Dispatcher
         $this->action = $_GET['action'] ?? 'default';
     }
 
+    /**
+     * @throws \Exception
+     */
     public function run(): void
     {
-        switch ($this->action) {
-            case 'default':
-                $act = new DefaultAction();
-                break;
-            case 'playlist':
-                $act = new DisplayPlaylistAction();  // 3EME
-                break;
-            case 'add-playlist':
-                $act = new AddPlaylistAction();  // 1ER
-                break;
-            case 'add-track':
-                $act = new AddPodcastTrackAction();  // 2EME
-                break;
-            case 'add-user':
-                $act = new AddUserAction();
-                break;
-            case 'login':
-                $act = new LoginAction();
-                break;
-            case 'destroy':
-                $act = new DestroyPlaylistAction();
-                break;
-            default:
-                $this->renderPage("Action inconnue");
-                break;
+        if (($this->$_SERVER['REQUEST_METHOD'] !== "POST") && ($this->$_SERVER['REQUEST_METHOD'] !== "GET"))
+            $this->renderPage("Erreur 418 : I'm a teapot");
+        else {
+            switch ($this->action) {
+                case 'default':
+                    $act = new DefaultAction();
+                    break;
+                case 'playlist':
+                    $act = new DisplayPlaylistAction();  // 3EME
+                    break;
+                case 'add-playlist':
+                    $act = new AddPlaylistAction();  // 1ER
+                    break;
+                case 'add-track':
+                    $act = new AddPodcastTrackAction();  // 2EME
+                    break;
+                case 'add-user':
+                    $act = new AddUserAction();
+                    break;
+                case 'login':
+                    $act = new LoginAction();
+                    break;
+                case 'logout':
+                    DeefyRepository::getInstance()->logoutUser();
+                    header("Location: TD12.php?action=default");
+                    break;
+                case 'destroy':
+                    $act = new DestroyPlaylistAction();
+                    break;
+                default:
+                    $this->renderPage("Action inconnue");
+                    break;
+            }
+            if (isset($act))
+                $this->renderPage($act->execute());
         }
-        if (isset($act))
-            $this->renderPage($act->execute());
     }
 
 

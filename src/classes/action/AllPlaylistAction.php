@@ -1,8 +1,7 @@
 <?php
 
-namespace iutnc\deefy\dispatch;
+namespace iutnc\deefy\action;
 
-use iutnc\deefy\action\Action;
 use iutnc\deefy\render\AudioListRenderer;
 use iutnc\deefy\repository\DeefyRepository;
 
@@ -10,6 +9,7 @@ class AllPlaylistAction extends Action
 {
     public function execute(): string
     {
+        // TODO: LE CSS DE LA PAGE + LES PERMS DE CHAQUE UTILISATEUR
         $id_listes = DeefyRepository::getInstance()->allPlaylistID();
         $html = "";
         foreach ($id_listes as $id){

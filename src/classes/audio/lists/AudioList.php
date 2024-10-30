@@ -44,6 +44,15 @@ abstract class AudioList
             $this->nbpiste = $this->nbpiste +1;
         }
     }
+
+    /**
+     * Pour l'id de la base de données.
+     * @param int $id
+     * @return void
+     */
+    public function setID(int $id){
+        $this->id_bdd = $id;
+    }
 /**
  * Une liste audio (classe AudioList) est décrite par un nom, un nombre de pistes, une durée totale
  * et un tableau contenant les pistes constituant la liste.

@@ -4,6 +4,7 @@ namespace iutnc\deefy\repository;
 
 use iutnc\deefy\action\DefaultAction;
 use iutnc\deefy\audio\lists\Playlist;
+use iutnc\deefy\audio\tracks\AlbumTrack;
 use iutnc\deefy\audio\tracks\PodcastTrack;
 use iutnc\deefy\dispatch\Dispatcher;
 use iutnc\deefy\exception\AuthException;
@@ -50,9 +51,60 @@ class DeefyRepository
         self::$config = ['dsn' => $dsn, 'user' => $conf['username'], 'pass' => $conf['password']];
     }
 
+    /**
+     * Programmer la méthode findPlaylistById() qui reçoit un entier identifiant une playlist,
+     * la récupère dans la base, charge les pistes associées et retourne un objet de type Playlist complet.
+     * @param int $id
+     * @return Playlist
+     * @throws \Exception
+     */
     public function findPlaylistById(int $id): Playlist
     {
-        return new Playlist("TO DO");
+        $query = "SELECT * FROM playlist where id = :id";
+        $stmt = $this->pdo->query($query);
+        $stmt->execute(['id' => $id]);
+        $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$res) {
+            throw new \Exception("Playlist not found");
+        }
+        $pl = new Playlist($res['nom']);
+        $pl->setID($res['id']);
+
+        $query = "SELECT * FROM playlist2track WHERE id_pl = :idPl";  // on récupère les pistes associées
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['idPl' => $id]);
+
+        while (!$res = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+            if ($res['type'] == 'P') {
+                $query = "SELECT * FROM podcast WHERE id = :id";
+                $stmt = $this->pdo->prepare($query);
+                $stmt->execute(['id' => $res['id_track']]);
+                $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $pod = new PodcastTrack($res['titre'], $res['filename']);
+                $pod->id_bdd = $res['id'];
+                $pod->duree = $res['duree'];
+                $pod->auteur = $res['auteur_podcast'];
+                $pod->date = $res['date_podcast'];
+                $pod->genre = $res['genre'];
+                $pl->ajouter($pod);
+            }
+            else {
+                if ($res['type'] == 'M') {
+                    $query = "SELECT * FROM musique WHERE id = :id";
+                    $stmt = $this->pdo->prepare($query);
+                    $stmt->execute(['id' => $res['id_track']]);
+                    $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+                    $mus = new AlbumTrack($res['titre'], $res['filename'], $res['album'], $res['numero']);
+                    $mus->id_bdd = $res['id'];
+                    $mus->duree = $res['duree'];
+                    $mus->artiste = $res['artiste'];
+                    $mus->genre = $res['genre'];
+                    $pl->ajouter($mus);
+                }
+            }
+        }
+
+        return $pl;
     }
 
     public function saveEmptyPlaylist(Playlist $pl): Playlist

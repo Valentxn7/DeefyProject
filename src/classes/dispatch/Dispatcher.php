@@ -32,14 +32,14 @@ class Dispatcher
                 case 'default':
                     $act = new DefaultAction();
                     break;
-                case 'playlist':
-                    $act = new DisplayPlaylistAction();  // 3EME
+                case 'playlists':
+                    $act = new AllPlaylistAction();
                     break;
                 case 'add-playlist':
-                    $act = new AddPlaylistAction();  // 1ER
+                    $act = new AddPlaylistAction();
                     break;
                 case 'add-track':
-                    $act = new AddPodcastTrackAction();  // 2EME
+                    $act = new AddPodcastTrackAction();
                     break;
                 case 'add-user':
                     $act = new AddUserAction();
@@ -53,6 +53,9 @@ class Dispatcher
                     break;
                 case 'destroy':
                     $act = new DestroyPlaylistAction();
+                    break;
+                case 'display-playlist':
+                    $act = new DisplayPlaylistAction();
                     break;
                 default:
                     $this->renderPage("Action inconnue");
@@ -92,7 +95,7 @@ class Dispatcher
         <nav>
             <ul>
                 <li><a href="?action=default">Accueil</a></li>
-                <li><a href="?action=playlist">Playlists</a></li>
+                <li><a href="?action=playlists">Playlists</a></li>
                 <li><a href="?action=add-playlist">Ajouter Playlist</a></li>
                 <li><a href="?action=add-track">Ajouter Piste</a></li>
                 {$logInOrOut}

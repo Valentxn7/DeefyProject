@@ -60,51 +60,100 @@ class DeefyRepository
      */
     public function findPlaylistById(int $id): Playlist
     {
-        $query = "SELECT * FROM playlist where id = :id";
-        $stmt = $this->pdo->query($query);
+        // READ !!
+        // le probème ici c'est que le sujet de base a une base NF1 bien pas belle mais avantageuse pour ce cas...
+        // remettre en NF3 est bien plus propre pour tout les autres requete mais pas pour celle-ci ...
+        // on a soit besoin de faire BEAUCOUP de requete pour récupérer les pistes associées dans chaque table
+        // soit faire une giga giga requetes avec des LEFT JOIN et tout le tralala pour récupérer tout en une fois donc refaire la base NF1 a contre coeur
+        // ici on a choisi la 2eme solution pour des raisons de performance car faire 10000 requetes pour 10000 pistes c'est pas ouf
+        // lets code
+
+        // on recup d'abord le nom de la playlist pour sa création
+        //echo "<br><br>3: " . var_dump($id);
+        $query = "SELECT nom FROM playlist where id = :id";
+        $stmt = $this->pdo->prepare($query);
         $stmt->execute(['id' => $id]);
         $res = $stmt->fetch(\PDO::FETCH_ASSOC);
         if (!$res) {
-            throw new \Exception("Playlist not found");
+            throw new \Exception("La playlist n'a pas été trouvée");
         }
         $pl = new Playlist($res['nom']);
-        $pl->setID($res['id']);
+        $pl->setID($id);
 
-        $query = "SELECT * FROM playlist2track WHERE id_pl = :idPl";  // on récupère les pistes associées
+        // merci bcp a coalesce qui nous sauve la vie (en gros il fusionne les 2 tables en une seule)
+        $query = "
+        SELECT pt.type, pt.id_track, pt.no_piste_dans_liste,
+               COALESCE(m.titre, pod.titre) AS titre,
+               COALESCE(m.genre, pod.genre) AS genre,
+               COALESCE(m.duree, pod.duree) AS duree,
+               COALESCE(m.filename, pod.filename) AS filename,
+               COALESCE(m.artiste, pod.auteur) AS artiste_auteur,
+               m.album, m.annee, m.numero, pod.date_podcast
+        FROM playlist2track pt
+        LEFT JOIN musique m ON pt.id_track = m.id AND pt.type = 'M'
+        LEFT JOIN podcast pod ON pt.id_track = pod.id AND pt.type = 'P'
+        WHERE pt.id_pl = :id
+        ORDER BY pt.no_piste_dans_liste ASC
+    ";
+        // voila le carnage (ou la bénédictions idk)
+
         $stmt = $this->pdo->prepare($query);
-        $stmt->execute(['idPl' => $id]);
+        $stmt->execute(['id' => $id]);
+        $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        while (!$res = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            if ($res['type'] == 'P') {
-                $query = "SELECT * FROM podcast WHERE id = :id";
-                $stmt = $this->pdo->prepare($query);
-                $stmt->execute(['id' => $res['id_track']]);
-                $res = $stmt->fetch(\PDO::FETCH_ASSOC);
-                $pod = new PodcastTrack($res['titre'], $res['filename']);
-                $pod->id_bdd = $res['id'];
-                $pod->duree = $res['duree'];
-                $pod->auteur = $res['auteur_podcast'];
-                $pod->date = $res['date_podcast'];
-                $pod->genre = $res['genre'];
+        foreach ($res as $row) {
+            if ($row['type'] == 'M') { // si c une musique
+                $mus = new AlbumTrack($row['titre'], $row['filename'], $row['album'], $row['numero']);
+                $mus->id_bdd = $row['id_track'];
+                $mus->duree = $row['duree'];
+                $mus->artiste = $row['artiste_auteur'];
+                $mus->genre = $row['genre'];
+                $pl->ajouter($mus);
+            } elseif ($row['type'] == 'P') { // si c un podcast
+                $pod = new PodcastTrack($row['titre'], $row['filename']);
+                $pod->id_bdd = $row['id_track'];
+                $pod->duree = $row['duree'];
+                $pod->auteur = $row['artiste_auteur'];
+                $pod->date = $row['date_podcast'];
+                $pod->genre = $row['genre'];
                 $pl->ajouter($pod);
             }
-            else {
-                if ($res['type'] == 'M') {
-                    $query = "SELECT * FROM musique WHERE id = :id";
-                    $stmt = $this->pdo->prepare($query);
-                    $stmt->execute(['id' => $res['id_track']]);
-                    $res = $stmt->fetch(\PDO::FETCH_ASSOC);
-                    $mus = new AlbumTrack($res['titre'], $res['filename'], $res['album'], $res['numero']);
-                    $mus->id_bdd = $res['id'];
-                    $mus->duree = $res['duree'];
-                    $mus->artiste = $res['artiste'];
-                    $mus->genre = $res['genre'];
-                    $pl->ajouter($mus);
-                }
-            }
         }
-
         return $pl;
+//        $query = "SELECT * FROM playlist2track WHERE id_pl = :idPl";  // on récupère les pistes associées
+//        $stmt = $this->pdo->prepare($query);
+//        $stmt->execute(['idPl' => $id]);
+//
+//        while (!$res = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+//            if ($res['type'] == 'P') {
+//                $query = "SELECT * FROM podcast WHERE id = :id";
+//                $stmt = $this->pdo->prepare($query);
+//                $stmt->execute(['id' => $res['id_track']]);
+//                $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+//                $pod = new PodcastTrack($res['titre'], $res['filename']);
+//                $pod->id_bdd = $res['id'];
+//                $pod->duree = $res['duree'];
+//                $pod->auteur = $res['auteur_podcast'];
+//                $pod->date = $res['date_podcast'];
+//                $pod->genre = $res['genre'];
+//                $pl->ajouter($pod);
+//            } else {
+//                if ($res['type'] == 'M') {
+//                    $query = "SELECT * FROM musique WHERE id = :id";
+//                    $stmt = $this->pdo->prepare($query);
+//                    $stmt->execute(['id' => $res['id_track']]);
+//                    $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+//                    $mus = new AlbumTrack($res['titre'], $res['filename'], $res['album'], $res['numero']);
+//                    $mus->id_bdd = $res['id'];
+//                    $mus->duree = $res['duree'];
+//                    $mus->artiste = $res['artiste'];
+//                    $mus->genre = $res['genre'];
+//                    $pl->ajouter($mus);
+//                }
+//            }
+//        }
+//
+//        return $pl;
     }
 
     public function saveEmptyPlaylist(Playlist $pl): Playlist
@@ -158,6 +207,19 @@ class DeefyRepository
         }
 
         return $playlists;
+    }
+
+    public function allPlaylistID(): array
+    {
+        $query = "SELECT id FROM playlist";
+        $stmt = $this->pdo->query($query);
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $liste_id = [];
+        foreach ($result as $row) {
+            array_push($liste_id, $row['id']);
+        }
+        return $liste_id;
     }
 
     public function addUser(string $email, string $password, string $username): string
@@ -236,7 +298,7 @@ class DeefyRepository
      * Doit uniquement être appelée par l'extérieur pour verif !!
      * @return bool
      */
-    function VerifToken() : bool
+    function VerifToken(): bool
     {
         if (isset($_COOKIE['remember_me'])) {
             $token = $_COOKIE['remember_me'];
@@ -298,7 +360,7 @@ class DeefyRepository
         } else {
             if (!password_verify($passwd2check, $result['passwd']))
                 return false;
-            else{
+            else {
                 $_SESSION['user_info'] = ['id' => $result['id'], 'nom' => $result['username']];
                 $this->AfterLoginUser($result['id']); // genère le token
                 return true;

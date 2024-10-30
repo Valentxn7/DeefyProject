@@ -162,6 +162,10 @@ class DeefyRepository
      */
     function AfterLoginUser($userId)
     {
+        // on efface l'ancien token
+        $this->DeleteActualToken();
+
+        // on génère un nouveau token
         $token = bin2hex(random_bytes(120)); // CA FAIT LE DOUBLE EN TAILLE !!!!!
         $expiresAt = date('Y-m-d H:i:s', strtotime('+10 days')); // Expiration dans 30 jours
 
@@ -176,7 +180,11 @@ class DeefyRepository
         setcookie('remember_me', $token, time() + (10 * 24 * 60 * 60), '/', '');  // 10J
     }
 
-    function VerifToken()
+    /**
+     * Doit uniquement être appelée par l'extérieur pour verif !!
+     * @return bool
+     */
+    function VerifToken() : bool
     {
         if (isset($_COOKIE['remember_me'])) {
             $token = $_COOKIE['remember_me'];
@@ -186,11 +194,11 @@ class DeefyRepository
             $stmt->execute(['token' => $token]);
             $userId = $stmt->fetchColumn(0); // la seul et unique colonne retourné
 
-            if ($userId) {  // si on a pas de result on a false donc on a pas de token ou token expiré
-                $query = "SELECT username FROM user WHERE :userId = id";  // si token là et NON expiré
+            if ($userId) {  // si token est là et NON expiré
+                $query = "SELECT username FROM user WHERE :userId = id";  // on remplie les infos de session
                 $stmt = $this->pdo->prepare($query);
                 $stmt->execute(['userId' => $userId]);
-                $username = $stmt->fetchColumn(0); // la seul et unique colonne retourné
+                $username = $stmt->fetchColumn();
 
                 $_SESSION['user_info'] = ['id' => $userId, 'nom' => $username];
                 return true;
@@ -200,9 +208,8 @@ class DeefyRepository
         return false;
     }
 
-    function logoutUser()
+    function DeleteActualToken()
     {
-
         if (isset($_COOKIE['remember_me'])) {
             $token = $_COOKIE['remember_me'];
 
@@ -210,8 +217,14 @@ class DeefyRepository
             $stmt = $this->pdo->prepare($query);
             $stmt->execute(['token' => $token]);
 
-            setcookie('remember_me', '', time() + 2, '/', ''); // Supprime le cookie
+            setcookie('remember_me', '', time() + 1, '/', ''); // Supprime le cookie
         }
+    }
+
+    function logoutUser()
+    {
+        $this->DeleteActualToken();
+
         // Supprime la session
         session_unset();
         session_destroy();
@@ -228,14 +241,14 @@ class DeefyRepository
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(['email' => $email]);
 
-        if (!($result = $stmt->fetchColumn(0))) {  // si on n'a pas de result = pas d'email
+        if (!($result = $stmt->fetch(\PDO::FETCH_ASSOC))) {  // si on n'a pas de result = pas d'email
             return false;
         } else {
-            if (!password_verify($passwd2check, $result->passwd))
+            if (!password_verify($passwd2check, $result['passwd']))
                 return false;
             else{
-                $_SESSION['user_info'] = ['id' => $this->pdo->lastInsertId(), 'nom' => $result->username];
-                $this->AfterLoginUser($result->id); // token
+                $_SESSION['user_info'] = ['id' => $result['id'], 'nom' => $result['username']];
+                $this->AfterLoginUser($result['id']); // genère le token
                 return true;
             }
 

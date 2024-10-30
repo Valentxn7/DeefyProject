@@ -26,8 +26,12 @@ class LoginAction extends Action
 
                 if (!DeefyRepository::getInstance()->login($email, $password))
                     return "Adresse email ou mot de passe incorrect";
-                else
-                    return "<h2>Connexion réussie</h2><br>Bienvenue, {$_SESSION['user_info']['nom']} !";
+                else {
+                    $ret = new DefaultAction();
+                    $ret::setPhrase("Heureux de te revoir, ");
+                    return $ret->execute();  // On revient à la page d'accueil
+                    //return "Connexion réussie<br>Bienvenue, {$_SESSION['user_info']['nom']} !</h2>";
+            }
             }
         } else {
             if ($this->http_method == "GET") {
@@ -37,10 +41,10 @@ class LoginAction extends Action
         return "";  // Ne devrait jamais arriver car http method testé dans dispatcher
     }
 
-        private
-        function renderLoginForm(): string
-        {
-            return <<<HTML
+    private
+    function renderLoginForm(): string
+    {
+        return <<<HTML
             <h2>Connexion</h2><br>
             <form id="form-login" action="TD12.php?action=login" method="POST">
                 <label for="email">Email : </label>
@@ -50,31 +54,32 @@ class LoginAction extends Action
                 <input type="password" id="password" name="password" required> <br><br>
                 
                 <input type="submit" value="Se connecter"> <br>
-            </form><br><br>
+            </form><br>
+            <a class="add_user_button" href="?action=add-user">Créer un compte</a><br><br>
 HTML;
-        }
-
-        private
-        function sanitize(): string
-        {
-            if (!isset($_POST['email']) || !isset($_POST['password'])) {
-                return "Tous les champs sont obligatoires.";
-            }
-
-            if (is_null($_POST['email']) || is_null($_POST['password'])) {
-                return "Tous les champs sont obligatoires.";
-            }
-
-            // Filtrer l'email
-            if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-                return "Adresse email invalide.";
-            }
-            $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-
-            // Filtrer le mot de passe
-            $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
-
-            return "OK";
-        }
     }
+
+    private
+    function sanitize(): string
+    {
+        if (!isset($_POST['email']) || !isset($_POST['password'])) {
+            return "Tous les champs sont obligatoires.";
+        }
+
+        if (is_null($_POST['email']) || is_null($_POST['password'])) {
+            return "Tous les champs sont obligatoires.";
+        }
+
+        // Filtrer l'email
+        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+            return "Adresse email invalide.";
+        }
+        $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+
+        // Filtrer le mot de passe
+        $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+
+        return "OK";
+    }
+}
 

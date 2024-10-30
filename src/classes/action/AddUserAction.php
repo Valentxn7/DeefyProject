@@ -30,8 +30,11 @@ class AddUserAction extends Action
                 $ret = "<h2> Votre compte a été créé</h2><br><br>";
                 $ret .= "Nom: {$_POST['name']}, Email: {$_POST['email']}, Age: {$_POST['age']} ans";
                 $rapport = DeefyRepository::getInstance()->addUser($_POST['email'], $_POST['password'], $_POST['name']);
-                if ($rapport == "OK")
-                    return $ret;
+                if ($rapport == "OK"){
+                    // on revient a la page d'acceuille
+                    header("Location: TD12.php");
+                }
+
                 else if ($rapport == 'a') { // already
                     return "Un compte existe déjà avec cet email.";
                 } else {
@@ -63,7 +66,10 @@ class AddUserAction extends Action
                                required > <br><br>
                         
                         <input type="submit" value="Valider"> <br>
-                    </form><br><br>
+                        <p>
+                            Déjà un compte ? <a href="?action=login">Connectez-vous ici</a>
+                        </p>
+                    </form><br>
 
 HTML;
             return $ret;

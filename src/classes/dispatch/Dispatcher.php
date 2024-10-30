@@ -25,7 +25,7 @@ class Dispatcher
      */
     public function run(): void
     {
-        if (($this->$_SERVER['REQUEST_METHOD'] !== "POST") && ($this->$_SERVER['REQUEST_METHOD'] !== "GET"))
+        if (($_SERVER['REQUEST_METHOD'] !== "POST") && ($_SERVER['REQUEST_METHOD'] !== "GET") )
             $this->renderPage("Erreur 418 : I'm a teapot");
         else {
             switch ($this->action) {

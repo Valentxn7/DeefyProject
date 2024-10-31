@@ -314,6 +314,11 @@ class DeefyRepository
             throw new \Exception("Erreur lors de l'ajout de la musique à la playlist");
     }
 
+    public function DeletePlaylist(Playlist $pl)
+    {
+        // TODO
+    }
+
     /**
      * @throws RandomException
      */

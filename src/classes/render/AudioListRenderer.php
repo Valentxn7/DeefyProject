@@ -15,7 +15,7 @@ class AudioListRenderer implements Renderer
     }
 
 
-    public function render(int $inutile): string
+    public function render(int $alternative): string
     {
         if (sizeof($this->audioList->liste) === 0) {
             return "La playlist {$this->audioList->nom} est vide";
@@ -29,7 +29,10 @@ class AudioListRenderer implements Renderer
                         $rend = new R\PodcastRenderer($this->audioList->liste[$i]);
                     }
                 }
-                $cont .= $rend->render(Renderer::COMPACT);
+                if ($alternative == 1)
+                    $cont .= $rend->render(Renderer::LONG);
+                else
+                    $cont .= $rend->render(Renderer::COMPACT);
             }
         }
         $cont .= "<br>nb pistes: " . $this->audioList->nbpiste;

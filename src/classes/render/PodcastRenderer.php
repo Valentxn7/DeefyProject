@@ -34,13 +34,14 @@ class PodcastRenderer implements Renderer
                         <audio id='audioPlayer' controls src='{$this->podcast->nom_fich}'> </audio> <br>";
                 return $ret;
 
-            case Renderer::INTER:
-                return "<br> {$this->podcast->date} - {$this->podcast->titre} - {$this->podcast->auteur} - {$this->podcast->duree}m <br> <br>  
-                        <audio id='audioPlayer' controls src='{$this->podcast->nom_fich}'> </audio> <br>";
-
             case Renderer::LONG:
-                return "<br> {$this->podcast->date} - {$this->podcast->titre} - {$this->podcast->auteur} - {$this->podcast->genre} - {$this->podcast->duree}m <br><br> 
+                $ret = "<br> {$this->podcast->titre}";
+                $ret .= ($this->podcast->auteur === AudioList::NO_AUTEUR) ? "" : " - {$this->podcast->auteur}";  // s'il n'y a pas d'auteur on affiche rien sinon on affiche l'auteur
+                $ret .= ($this->podcast->date === AudioList::NO_DATE) ? "" : " - {$this->podcast->date}";
+                $ret .= ($this->podcast->genre === AudioList::NO_GENRE) ? "" : " - {$this->podcast->genre}";
+                $ret .= " - " . sprintf("%02d:%02d", $minutes, $seconds) . "<br> <br> 
                         <audio id='audioPlayer' controls src='{$this->podcast->nom_fich}'> </audio> <br>";
+                return $ret;
 
             default:
                 return "g pas Kanpri";

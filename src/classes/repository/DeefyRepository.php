@@ -88,7 +88,7 @@ class DeefyRepository
                COALESCE(m.duree, pod.duree) AS duree,
                COALESCE(m.filename, pod.filename) AS filename,
                COALESCE(m.artiste, pod.auteur) AS artiste_auteur,
-               m.album, m.annee, m.numero, pod.date_podcast
+               m.album, m.annee, m.numero, DATE_FORMAT(pod.date, '%Y-%m-%d') as date
         FROM playlist2track pt
         LEFT JOIN musique m ON pt.id_track = m.id AND pt.type = 'M'
         LEFT JOIN podcast pod ON pt.id_track = pod.id AND pt.type = 'P'
@@ -108,13 +108,16 @@ class DeefyRepository
                 $mus->duree = $row['duree'];
                 $mus->artiste = $row['artiste_auteur'];
                 $mus->genre = $row['genre'];
+                $mus->annee = $row['annee'];
+                $mus->numero = $row['numero'];
+                $mus->album = $row['album'];
                 $pl->ajouter($mus);
             } elseif ($row['type'] == 'P') { // si c un podcast
                 $pod = new PodcastTrack($row['titre'], $row['filename']);
                 $pod->id_bdd = $row['id_track'];
                 $pod->duree = $row['duree'];
                 $pod->auteur = $row['artiste_auteur'];
-                $pod->date = $row['date_podcast'];
+                $pod->date = $row['date'];
                 $pod->genre = $row['genre'];
                 $pl->ajouter($pod);
             }
@@ -156,28 +159,49 @@ class DeefyRepository
 //        return $pl;
     }
 
-    public function saveEmptyPlaylist(Playlist $pl): Playlist
+    public function saveEmptyPlaylist(Playlist $pl): void
     {
+        // on créer la playlist
         $query = "INSERT INTO playlist (nom) VALUES (:nom)";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(['nom' => $pl->nom]);
         $pl->setID($this->pdo->lastInsertId());
-        return $pl;
+
+        // on l'associe a l'utilisateur
+        $query = "INSERT INTO user2playlist (id_user, id_pl) VALUES (:id_user, :id_playlist)";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['id_user' => $_SESSION['user_info']['id'], 'id_playlist' => $pl->id_bdd]);
+
+        $_SESSION['playlist'] = $pl;
     }
 
     public function savePodcastTrack(PodcastTrack $podcastTrack): bool
     {
-        $query = "INSERT INTO track (titre, genre, duree, filename, type, auteur_podcast, date_podcast) 
-                            VALUES(:titre, :genre, :duree, :nom_fich, :type, :auteur, :date)";
+        // on save le podcast
+        $query = "INSERT INTO podcast (titre, genre, duree, filename, auteur, date)
+                            VALUES(:titre, :genre, :duree, :nom_fich, :auteur, :date)";
         $stmt = $this->pdo->prepare($query);
         if ($stmt->execute(['titre' => $podcastTrack->titre, 'genre' => $podcastTrack->genre, 'duree' => $podcastTrack->duree,
-            'nom_fich' => $podcastTrack->nom_fich, 'type' => 'P', 'auteur' => $podcastTrack->auteur, 'date' => $podcastTrack->date])) {
+            'nom_fich' => $podcastTrack->nom_fich, 'auteur' => $podcastTrack->auteur, 'date' => $podcastTrack->date])) {
             $podcastTrack->id_bdd = $this->pdo->lastInsertId(); // on devrait faire une fonction setID ...
             return true;
         } else
             return false;
+    }
 
-
+    public function saveMusiqueTrack(AlbumTrack $musique): bool
+    {
+        // on save le podcast
+        $query = "INSERT INTO musique (titre, genre, duree, filename, artiste, album, annee, numero)
+                                VALUES(:titre, :genre, :duree, :nom_fich, :artiste, :album, :annee, :numero)";
+        $stmt = $this->pdo->prepare($query);
+        if ($stmt->execute(['titre' => $musique->titre, 'genre' => $musique->genre, 'duree' => $musique->duree,
+            'nom_fich' => $musique->nom_fich, 'artiste' => $musique->artiste, 'annee' => $musique->annee,
+            'album' => $musique->album, 'numero' => $musique->numero])) {
+            $musique->id_bdd = $this->pdo->lastInsertId(); // on devrait faire une fonction setID ...
+            return true;
+        } else
+            return false;
     }
 
     /**
@@ -264,11 +288,30 @@ class DeefyRepository
      * @param PodcastTrack $podcastTrack
      * @return void
      */
-    public function addPodcastToPlaylist(PodcastTrack $podcastTrack, Playlist $playlist): void
+    public function addPodcastToPlaylist(PodcastTrack $podcastTrack, Playlist $pl): void
     {
-        $query = "INSERT INTO playlist2track (id_pl, id_track) VALUES (:id_playlist, :id_track)";
-        $stmt = $this->pdo->prepare($query);
-        $stmt->execute(['id_playlist' => $playlist->id_bdd, 'id_track' => $podcastTrack->id_bdd]);
+        // on ajoute d'abord le podcast a la base
+        if(DeefyRepository::getInstance()->savePodcastTrack($podcastTrack)){
+            $query = "INSERT INTO playlist2track (id_pl, id_track, no_piste_dans_liste, type) 
+                                          VALUES (:id_playlist, :id_track, :no_piste, :type)";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute(['id_playlist' => $pl->id_bdd, 'id_track' => $podcastTrack->id_bdd,
+                            'no_piste' => $pl->getLongueur()+1, 'type' => 'P']);
+        } else
+            throw new \Exception("Erreur lors de l'ajout du podcast à la playlist");
+    }
+
+    public function addMusiqueToPlaylist(AlbumTrack $musique, Playlist $pl)
+    {
+        // on ajoute d'abord le podcast a la base
+        if(DeefyRepository::getInstance()->saveMusiqueTrack($musique)){
+            $query = "INSERT INTO playlist2track (id_pl, id_track, no_piste_dans_liste, type) 
+                                          VALUES (:id_playlist, :id_track, :no_piste, :type)";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute(['id_playlist' => $pl->id_bdd, 'id_track' => $musique->id_bdd,
+                'no_piste' => $pl->getLongueur()+1, 'type' => 'M']);
+        } else
+            throw new \Exception("Erreur lors de l'ajout de la musique à la playlist");
     }
 
     /**

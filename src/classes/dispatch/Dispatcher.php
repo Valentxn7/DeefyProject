@@ -2,6 +2,7 @@
 
 namespace iutnc\deefy\dispatch;
 
+use iutnc\deefy\action\AddAlbumTrackAction;
 use iutnc\deefy\action\AddPlaylistAction;
 use iutnc\deefy\action\AddPodcastTrackAction;
 use iutnc\deefy\action\AddUserAction;
@@ -39,7 +40,10 @@ class Dispatcher
                 case 'add-playlist':
                     $act = new AddPlaylistAction();
                     break;
-                case 'add-track':
+                case 'add-Albumtrack':
+                    $act = new AddAlbumTrackAction();
+                    break;
+                case 'add-Podcasttrack':
                     $act = new AddPodcastTrackAction();
                     break;
                 case 'add-user':

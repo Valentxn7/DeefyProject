@@ -8,7 +8,10 @@ abstract class AudioList
 {
     public const NO_AUTEUR = "Inconnue";
     public const NO_GENRE = "N/A";
-    public const NO_DATE = "N/A";
+    public const NO_DATE = "0000-00-00";
+    public const NO_ALBUM = "N/A";
+    public const NO_ANNEE = "N/A";
+    public const NO_NUMERO = -1;
     protected string $nom;
     protected int $nbpiste, $duree;
     protected array $liste;
@@ -22,7 +25,7 @@ abstract class AudioList
         $this->nbpiste = 0;
         for ($i = 1; $i <= sizeof($arr); $i++) {
             $this->duree = $this->duree + $arr[$i]->duree;
-            $this->nbpiste = $this->nbpiste +1;
+            $this->nbpiste = $this->nbpiste + 1;
         }
     }
 
@@ -36,12 +39,13 @@ abstract class AudioList
             throw new Exception("invalid property : " . $name);
     }
 
-    public function MAJ_liste_duree_nb(){
+    public function MAJ_liste_duree_nb()
+    {
         $this->duree = 0;
         $this->nbpiste = 0;
         for ($i = 0; $i < count($this->liste); $i++) {
             $this->duree = $this->duree + $this->liste[$i]->duree;
-            $this->nbpiste = $this->nbpiste +1;
+            $this->nbpiste = $this->nbpiste + 1;
         }
     }
 
@@ -50,16 +54,22 @@ abstract class AudioList
      * @param int $id
      * @return void
      */
-    public function setID(int $id){
+    public function setID(int $id)
+    {
         $this->id_bdd = $id;
     }
-/**
- * Une liste audio (classe AudioList) est décrite par un nom, un nombre de pistes, une durée totale
- * et un tableau contenant les pistes constituant la liste.
- * • créer la classe AudioList en programmant un constructeur qui reçoit en paramètre le
- * nom de la liste et un tableau optionnel de piste qui prendra la valeur [ ] s'il est omis. Le
- * constructeur initialise les propriétés, notamment en calculant le nombre de pistes et la durée
- * totale. La classe implante le getter magique __get() pour accéder au valeur des propriétés
- * mais ne permet pas leur modification.
- */
+
+    public function getLongueur(): int
+    {
+        return sizeof($this->liste);
+    }
+    /**
+     * Une liste audio (classe AudioList) est décrite par un nom, un nombre de pistes, une durée totale
+     * et un tableau contenant les pistes constituant la liste.
+     * • créer la classe AudioList en programmant un constructeur qui reçoit en paramètre le
+     * nom de la liste et un tableau optionnel de piste qui prendra la valeur [ ] s'il est omis. Le
+     * constructeur initialise les propriétés, notamment en calculant le nombre de pistes et la durée
+     * totale. La classe implante le getter magique __get() pour accéder au valeur des propriétés
+     * mais ne permet pas leur modification.
+     */
 }

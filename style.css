@@ -122,3 +122,85 @@ details {
 #form-add-track{
     margin-left: 2%;
 }
+
+.playlists-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 50px 25px;
+    justify-content: center;
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.playlists-container a{
+    flex: 1 1 1%; /* 3 colonnes */
+    min-width: 280px;
+    max-width: 300px;
+    background-color: #282828;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    color: #e7e7e7;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.playlists-container a:hover {
+    color: #ffffff;
+}
+
+.playlist audio {
+    width: 100%;
+    margin-top: 10px;
+    background-color: #404040;
+    border-radius: 5px;
+}
+
+
+/* PLAYLIST EN GRAND */
+
+/* Colonne gauche */
+#playlist-content {
+    flex: 1; /* Prend 50% de l'espace */
+    min-width: 60%;
+    max-width: 60%;
+    margin-right: 10%;
+}
+
+.content .playlist-content .track{
+    flex: 1; /* Prend 50% de l'espace */
+    min-width: 60%;
+    color: #4CAF50;
+}
+
+/* Colonne droite */
+.form-actions {
+    flex: 1;
+    max-width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Style pour le formulaire d'ajout de musique en haut */
+.ajout-musique {
+    margin-bottom: 20px; /* Espace avec l'autre formulaire */
+}
+
+/* Style pour le bouton de suppression en bas */
+.supp-button button {
+    width: 100%;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.supp-button button:hover {
+    background-color: darkred;
+}
+

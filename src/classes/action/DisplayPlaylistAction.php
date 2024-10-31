@@ -10,8 +10,6 @@ use iutnc\deefy\repository\DeefyRepository;
 
 class DisplayPlaylistAction extends Action
 {
-
-
     public function execute(): string
     {
         if (empty($_GET['id'])) {
@@ -22,9 +20,55 @@ class DisplayPlaylistAction extends Action
         //echo "<br><br>2: " . var_dump($id);
         try {$playlist = DeefyRepository::getInstance()->findPlaylistById($id);}
         catch (\Exception $e) {return $e->getMessage();}
-
+        $_SESSION['playlist'] = $playlist;
         $rend = new AudioListRenderer($playlist);
-        $html = $rend->render(10);
+        $rend = $rend->render(1);
+
+        $_SERVER['REQUEST_METHOD'] = "GET";  // pr demander les form
+        $form1 = new AddPodcastTrackAction();
+        $form1 = $form1->execute();
+
+        $form2 = new AddAlbumTrackAction();
+        $form2 = $form2->execute();
+
+
+        $html = <<<HTML
+        <style>
+        .content {
+            display: flex;
+            width: 100%;
+            max-width: 90%;
+            max-width: 90%;
+            gap: 20px;
+            margin: 2% auto;
+        }
+
+        </style>
+        <div id="playlist-content">
+            $rend
+        </div>
+
+        <div class="form-actions">
+
+            <div class="ajout-musique">
+
+                $form1
+
+            </div>
+
+            <div class="ajout-podcast">
+
+                $form2
+
+            </div>
+
+
+            <div class="supp-button">
+                <button>Supprimer la playlist</button>
+            </div>
+            
+        </div>
+        HTML;
         return $html;
     }
 

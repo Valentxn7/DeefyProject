@@ -102,7 +102,7 @@ class Dispatcher
                 <li><a href="?action=default">Accueil</a></li>
                 <li><a href="?action=playlists">Playlists</a></li>
                 <li><a href="?action=add-playlist">Ajouter Playlist</a></li>
-                <li><a href="?action=add-track">Ajouter Piste</a></li>
+                <!--<li><a href="?action=add-track">Ajouter Piste</a></li>-->
                 {$logInOrOut}
             </ul>
         </nav>

@@ -38,7 +38,7 @@ class AllPlaylistAction extends Action
             try {$playlist = DeefyRepository::getInstance()->findPlaylistById($id);}
             catch (\Exception $e) {return $e->getMessage();}
             $rend = new AudioListRenderer($playlist);
-            $html .= $rend->render(10);
+            $html .= $rend->render(2);
             $html .= "</div> </a> <br>";
         }
         $html .= "</div>";

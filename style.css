@@ -164,25 +164,74 @@ details {
 
 /* Colonne gauche */
 #playlist-content {
-    flex: 1; /* Prend 50% de l'espace */
-    min-width: 60%;
-    max-width: 60%;
-    margin-right: 10%;
-}
-
-.content .playlist-content .track{
-    flex: 1; /* Prend 50% de l'espace */
-    min-width: 60%;
-    color: #4CAF50;
+    /*flex: 1; !* Prend 50% de l'espace *!*/
+    min-width: 350px;
+    max-width: 40%;
+    margin-right: 47%;
+    margin-left: 2%;
 }
 
 /* Colonne droite */
 .form-actions {
-    flex: 1;
+    /*flex: 1;*/
     max-width: 30%;
-    display: flex;
+    /*display: flex;*/
     flex-direction: column;
     justify-content: space-between;
+    min-width: 355px;
+    margin-right: 3%;
+}
+
+@media (max-width: 1685px) {
+    #playlist-content {
+        min-width: 350px;
+        margin-right: 40%;
+    }
+}
+
+@media (max-width: 1441px) {
+    #playlist-content {
+        min-width: 350px;
+        margin-right: 32%;
+    }
+}
+
+@media (max-width: 1272px) {
+    #playlist-content {
+        min-width: 350px;
+        margin-right: 20%;
+    }
+}
+
+@media (max-width: 1110px) {
+    #playlist-content {
+        min-width: 350px;
+        margin-right: 12%;
+    }
+}
+
+@media (max-width: 1030px) {
+    #playlist-content {
+        min-width: 350px;
+        margin-right: 5%;
+    }
+}
+
+@media (max-width: 950px) {
+    #playlist-content {
+        min-width: 350px;
+        margin-right: 0%;
+    }
+}
+
+@media (max-width: 900px) {
+    .form-actions {
+        min-width: 1px;
+    }
+
+    .form-add-track input {
+        width: 100%;
+    }
 }
 
 /* Style pour le formulaire d'ajout de musique en haut */

@@ -6,6 +6,8 @@
 namespace iutnc\deefy\action;
 
 use iutnc\deefy\audio\lists\Playlist;
+use iutnc\deefy\auth\AuthnProvider;
+use iutnc\deefy\auth\Authz;
 use iutnc\deefy\repository\DeefyRepository;
 
 class AddPlaylistAction extends Action
@@ -15,15 +17,32 @@ class AddPlaylistAction extends Action
         if ($this->http_method == "POST") {
 
             $this->sanitize();
+            $user = AuthnProvider::getSignedInUser();
+            $verif = new Authz($user);
+            try {
+                $verif->checkRole(Authz::USER);
+            } catch (\Exception $e) {
+                return "Vous devez être connecté pour créer une playlist";
+            }
+
             $playlist = new Playlist($_POST['title']);
-            $_SESSION['playlist'] = $playlist;
+
             DeefyRepository::getInstance()->saveEmptyPlaylist($_SESSION['playlist']);
             // on redirige vers la page de la playlist
             header("Location: TD12.php?action=display-playlist&id={$playlist->id_bdd}");
-            //return "Playlist {$_POST['title']} créée";
+            return "";
 
         } else if ($this->http_method == "GET") {
             $ret = <<<HTML
+                    <style>
+                        @media (max-width: 465px) {
+                            .content h2{
+                                font-size: 1.43em;
+                            }
+                        }
+                    </style>
+
+                    
                     <h2>Ajouter une nouvelle playlist</h2><br>
                     <form action="TD12.php?action=add-playlist" method="POST">
                 

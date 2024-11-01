@@ -2,6 +2,7 @@
 
 namespace iutnc\deefy\action;
 
+use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
 class DefaultAction extends Action
@@ -9,12 +10,11 @@ class DefaultAction extends Action
     private static String $phrase = "Bienvenue, ";
     public function execute(): string
     {
+        unset($_SESSION['playlist']);
+
         DeefyRepository::getInstance()->VerifToken();
-        if (empty($_SESSION['user_info']['nom'])) {
-            $username = "Voyageur";
-        } else {
-            $username = $_SESSION['user_info']['nom'];
-        }
+        $user = AuthnProvider::getSignedInUser();
+        $username = $user['nom'];
 
         return "<h3>" . DefaultAction::$phrase . $username . " !</h3>";
     }

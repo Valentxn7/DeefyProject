@@ -2,7 +2,7 @@
 
 namespace iutnc\deefy\audio\lists;
 
-use iutnc\deefy\audio\lists\Exception;
+use Exception;
 
 abstract class AudioList
 {
@@ -10,12 +10,13 @@ abstract class AudioList
     public const NO_GENRE = "N/A";
     public const NO_DATE = "0000-00-00";
     public const NO_ALBUM = "N/A";
-    public const NO_ANNEE = "N/A";
+    public const NO_ANNEE = -1;
     public const NO_NUMERO = -1;
     protected string $nom;
     protected int $nbpiste, $duree;
     protected array $liste;
     protected int $id_bdd;
+    protected bool $isPrivate = true;
 
     public function __construct(string $name, array $arr = [])
     {
@@ -39,7 +40,7 @@ abstract class AudioList
             throw new Exception("invalid property : " . $name);
     }
 
-    public function MAJ_liste_duree_nb()
+    public function MAJ_liste_duree_nb(): void
     {
         $this->duree = 0;
         $this->nbpiste = 0;
@@ -54,9 +55,19 @@ abstract class AudioList
      * @param int $id
      * @return void
      */
-    public function setID(int $id)
+    public function setID(int $id): void
     {
         $this->id_bdd = $id;
+    }
+
+    /**
+     * Permet de définir si la liste est privée ou non.
+     * @param bool $isPrivate True si la liste est privée, false sinon.
+     * @return void
+     */
+    public function setIsPrivate(bool $isPrivate): void
+    {
+        $this->isPrivate = $isPrivate;
     }
 
     public function getLongueur(): int

@@ -11,6 +11,7 @@ use iutnc\deefy\action\DefaultAction;
 use iutnc\deefy\action\DestroyPlaylistAction;
 use iutnc\deefy\action\DisplayPlaylistAction;
 use iutnc\deefy\action\LoginAction;
+use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
 class Dispatcher
@@ -37,7 +38,7 @@ class Dispatcher
                 case 'playlists':
                     $act = new AllPlaylistAction();
                     break;
-                case 'add-playlist':
+                case 'add-playlist':  // a verifier
                     $act = new AddPlaylistAction();
                     break;
                 case 'add-Albumtrack':
@@ -56,7 +57,7 @@ class Dispatcher
                     DeefyRepository::getInstance()->logoutUser();
                     header("Location: TD12.php?action=default");
                     break;
-                case 'destroy':
+                case 'delete-playlist':
                     $act = new DestroyPlaylistAction();
                     break;
                 case 'display-playlist':
@@ -75,13 +76,9 @@ class Dispatcher
     private function renderPage(string $html): void
     {
         DeefyRepository::getInstance()->VerifToken();
-        if (empty($_SESSION['user_info']['nom'])) {
-            $username = "Invité";
-            $logInOrOut = "<li><a href='?action=login'>Connexion</a></li>";
-        } else {
-            $username = $_SESSION['user_info']['nom'];
-            $logInOrOut = "<li><a href='?action=logout'>Déconnexion</a></li>";
-        }
+        $user = AuthnProvider::getSignedInUser();
+        $username = $user['nom'];
+        $logInOrOut = $user['id'] == -1 ? "<a href='?action=login'>Connexion</a>" : "<a href='?action=logout'>Déconnexion</a>";
 
         $ret = <<<HTML
     <!DOCTYPE html>
@@ -99,11 +96,11 @@ class Dispatcher
         </div>
         <nav>
             <ul>
-                <li><a href="?action=default">Accueil</a></li>
-                <li><a href="?action=playlists">Playlists</a></li>
-                <li><a href="?action=add-playlist">Ajouter Playlist</a></li>
+                <li id="acceuil"><a href="?action=default">Accueil</a></li>
+                <li id="playlist"><a href="?action=playlists">Playlists</a></li>
+                <li id="add"><a href="?action=add-playlist">Ajouter Playlist</a></li>
                 <!--<li><a href="?action=add-track">Ajouter Piste</a></li>-->
-                {$logInOrOut}
+                <li id="log">{$logInOrOut}</li>
             </ul>
         </nav>
     </header>
@@ -120,87 +117,5 @@ class Dispatcher
 HTML;
         echo $ret;
     }
-
-
-    private function renderPage_old(string $html): void
-    {
-        if (empty($_SESSION['user_info']['nom'])) {
-            $username = "unknow ! ";
-        } else {
-            $username = " " . $_SESSION['user_info']['nom'];
-        }
-        DeefyRepository::getInstance()->VerifToken();
-        $ret = <<<HTML
-            <!DOCTYPE html>
-            <html lang='fr'>
-            <head>
-                <meta charset='UTF-8'>
-                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-                <title>Deefy</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        margin: 0;
-                        padding: 0;
-                        background-color: #f4f4f4;
-                    }
-                    header {
-                        background-color: #4CAF50;
-                        color: white;
-                        padding: 10px 20px;
-                        text-align: center;
-                    }
-                    footer {
-                        background-color: #4CAF50;
-                        color: white;
-                        text-align: center;
-                        padding: 10px 0;
-                        position: fixed;
-                        bottom: 0;
-                        width: 100%;
-                    }
-                    .content {
-                        padding: 20px;
-                        text-align: center;
-                        min-height: calc(100vh - 100px); /* Height minus header and footer */
-                    }
-                </style>
-            </head>
-            <body>
-                <header>
-                    <h1>Bienvenue sur Deefy $username</h1>
-                    <nav>
-                        <a href='?action=default' style='color: white; margin: 0 15px;'>Accueil</a>
-                        <a href='?action=playlist' style='color: white; margin: 0 15px;'>Afficher Playlists</a>
-                        <a href='?action=add-playlist' style='color: white; margin: 0 15px;'>Ajouter Playlist</a>
-                        <a href='?action=add-track' style='color: white; margin: 0 15px;'>Ajouter Piste</a>
-                    </nav>
-                </header>
-                <div class='content'>
-                    $html
-                </div>
-                <footer>
-                    <p>&copy; <?php echo date("Y"); ?> Mon Application. Tous droits réservés.</p>
-                </footer>
-            </body>
-            </html>
-HTML;
-        echo $ret;
-    }
-
-    /**
-     * private function renderPage(string $html): void
-     * {
-     * $ret = "<!DOCTYPE html>
-    * <html lang='fr'>
-     * <head>
-     * <meta charset='UTF-8'>
-     * </head>
-     * <body>" . $html . "</body>
-     * </html>";
-    * echo $ret;
-     * }
-     **/
-
 }
 

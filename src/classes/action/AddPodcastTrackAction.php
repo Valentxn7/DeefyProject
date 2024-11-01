@@ -9,14 +9,36 @@ namespace iutnc\deefy\action;
 use iutnc\deefy\audio\lists\AudioList;
 use iutnc\deefy\audio\tracks\PodcastTrack;
 use getID3;
+use iutnc\deefy\auth\AuthnProvider;
+use iutnc\deefy\auth\Authz;
 use iutnc\deefy\repository\DeefyRepository;
 
 class AddPodcastTrackAction extends Action
 {
     public function execute(): string
     {
+        if (empty($_SESSION['playlist'])) {
+            return "Veuillez selectionner une playlist";
+        }
         if ($this->http_method == "POST") {
             $this->sanitize();
+
+            $user = AuthnProvider::getSignedInUser();
+            $verif = new Authz($user);
+            try {
+                $verif->checkRole(Authz::USER);
+            } catch (\Exception $e) {
+                return "Vous devez être connecté pour ajouter un podcast à une playlist";
+            }
+
+            try {
+                $verif->checkPlaylistOwner($_SESSION['playlist']->id_bdd);
+            } catch (\Exception $e) {
+                return "Vous n'êtes pas autorisé à fouiller dans les affaires des autres";
+            }
+
+
+
             $base_sys = realpath($_SERVER['DOCUMENT_ROOT']);  // C:\xampp\htdocs pour STOCKER LES FICHIERS
             $base_access = "http://" . $_SERVER['HTTP_HOST'];  // http://localhost/ pour ACCEDER AUX FICHIERS COTE CLIENT
 
@@ -49,7 +71,8 @@ class AddPodcastTrackAction extends Action
                         DeefyRepository::getInstance()->addPodcastToPlaylist($track, $_SESSION['playlist']);
 
                         $_SESSION['playlist']->ajouter($track);
-                        return "Votre podcast a été ajouté à la playlist.<br>";
+                        header("Location: TD12.php?action=display-playlist&id={$_SESSION['playlist']->id_bdd}");
+                        return "";
                     } else
                         return "Hum, hum il y a un cheveu dans la soupe.<br>Le serveur n'a pas put traiter votre requête.<br>";;
 

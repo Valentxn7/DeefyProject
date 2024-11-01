@@ -2,6 +2,10 @@
 
 namespace iutnc\deefy\action;
 
+use Exception;
+use iutnc\deefy\auth\AuthnProvider;
+use iutnc\deefy\auth\Authz;
+use iutnc\deefy\exception\AccessControlException;
 use iutnc\deefy\render\AudioListRenderer;
 use iutnc\deefy\repository\DeefyRepository;
 
@@ -9,7 +13,11 @@ class AllPlaylistAction extends Action
 {
     public function execute(): string
     {
+        unset($_SESSION['playlist']);
+
         // TODO: LE CSS DE LA PAGE + LES PERMS DE CHAQUE UTILISATEUR
+        $user = AuthnProvider::getSignedInUser();
+        $authz = new Authz($user);
         $id_listes = DeefyRepository::getInstance()->allPlaylistID();
         $html = "<style>
         .content {
@@ -32,16 +40,44 @@ class AllPlaylistAction extends Action
         }
 
          </style>";
+        $pubList = [];
+        $privList = [];
+        // on trie les playlists par public et privée appartenant à l'utilisateur
+        foreach ($id_listes as $id) {
+            $pl = DeefyRepository::getInstance()->findPlaylistById($id);
+            if (!($pl->isPrivate)) {
+                array_push($pubList, ['pl' => $pl, 'id' => $id]);
+            } else {
+                try {
+                    $authz->checkRole(Authz::USER);
+                    $authz->checkPlaylistOwner($id);
+
+                    array_push($privList, ['pl' => $pl, 'id' => $id]);
+                } catch (Exception $e) {
+                }  // on ne fait rien l'utilisateur n'a rien demandé on trie juste les playlists
+            }
+        }
+
+        $html .= "<h2> Conçu pour {$user['nom']} </h2>";
         $html .= "<div class='playlists-container'>";
-        foreach ($id_listes as $id){
-            $html .= "<a href='TD12.php?action=display-playlist&id=$id'><div class='playlist'>";
-            try {$playlist = DeefyRepository::getInstance()->findPlaylistById($id);}
-            catch (\Exception $e) {return $e->getMessage();}
-            $rend = new AudioListRenderer($playlist);
+        foreach ($pubList as $pl) {
+            $html .= "<a href='TD12.php?action=display-playlist&id={$pl['id']}'><div class='playlist'>";
+            $rend = new AudioListRenderer($pl['pl']);
             $html .= $rend->render(2);
             $html .= "</div> </a> <br>";
         }
         $html .= "</div>";
+
+        $html .= "<h2> Vos playlists </h2>";
+        $html .= "<div class='playlists-container'>";
+        foreach ($privList as $pl) {
+            $html .= "<a href='TD12.php?action=display-playlist&id={$pl['id']}'><div class='playlist'>";
+            $rend = new AudioListRenderer($pl['pl']);
+            $html .= $rend->render(2);
+            $html .= "</div> </a> <br>";
+        }
+        $html .= "</div>";
+
         return $html;
     }
 

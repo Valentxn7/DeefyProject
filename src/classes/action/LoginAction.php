@@ -3,6 +3,7 @@
 namespace iutnc\deefy\action;
 
 use iutnc\deefy\action\Action;
+use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
 /**
@@ -15,6 +16,12 @@ class LoginAction extends Action
      */
     public function execute(): string
     {
+        unset($_SESSION['playlist']);
+
+        if (AuthnProvider::getSignedInUser()->id != -1) {  // si l'utilisateur est déjà connecté et essaie de se reconnecter
+            header("Location: TD12.php");
+        }
+
         if ($this->http_method == "POST") {
             $rapport = $this->sanitize();
             if ($rapport != "OK")

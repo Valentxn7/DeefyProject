@@ -2,8 +2,6 @@
 
 namespace iutnc\deefy\audio\tracks;
 
-use iutnc\deefy\audio\tracks\AudioTrack;
-
 class AlbumTrack extends AudioTrack
 {
     /**
@@ -14,7 +12,8 @@ class AlbumTrack extends AudioTrack
      * • nommer le fichier AlbumTrack.php
      **/
     //pr chaque piste
-    protected string $artiste, $album, $annee, $numero;
+    protected string $artiste, $album, $annee;
+    protected int $numero;
 
     public function __construct(string $titre_piste, string $path, string $alb_name, string $num_piste)
     {

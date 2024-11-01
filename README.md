@@ -1,35 +1,24 @@
 🎶 Deefy - La Fusion Suprême entre Deezer et Spotify 🎶
 
 Bienvenue sur Deefy, où Deezer et Spotify fusionnent dans un cocktail musical aussi rafraîchissant qu'une playlist de hits estivaux. Parce qu'on voulait le meilleur des deux mondes, mais sans le prix de l'abonnement premium. 😉
+
 🧩 Deefy, C’est Quoi ?
 
 Deefy, c’est votre application de musique en ligne qui ressemble à Spotify, emprunte des vibes à Deezer, et vous laisse écouter vos playlists... façon "fait maison". Imaginez un lecteur qui vous comprend (ou presque) et vous propose une expérience personnalisée (parce que c’est vous qui ajoutez vos propres morceaux, en fait).
+
 📜 Fonctionnalités
 
 Avec Deefy, découvrez un éventail de fonctionnalités aussi large que votre collection de vinyles.
 
     Mes Playlists : Naviguez dans vos playlists avec style et légèreté, jusqu'à 3 par ligne pour garder l'affichage au top.
+    Afficher la Playlist sélectionnée : En un coup d'œil, consultez la playlist de votre choix et modifiez-la à votre guise !
     Créer une Playlist : Donnez un nom épique à votre nouvelle playlist et créez-la en un clic.
     Ajouter une Piste : Rien de plus simple que d'ajouter vos morceaux (ou podcasts) dans vos playlists !
     Authentification et Autorisation : La sécurité avant tout ! Les playlists sont réservées à leurs propriétaires et aux admins, comme chez les pros.
 
 🚀 Comment l'utiliser ?
 
-  En local :
-
-    Cloner le repo : Pas besoin d’abonnement ! Juste un git clone :
-
-    bash
-
-    git clone https://github.com/votre-nom-utilisateur/Deefy.git
-
-    Préparation de la Base de Données : Utilisez le script de création pour une base bien remplie (à découvrir dans le dossier db).
-
-    Configuration de l’App : Ajustez le fichier de config pour un accès optimal.
-
-    Lancer le Serveur : Faites-vous plaisir, démarrez avec un serveur local et laissez la musique commencer.
-
-  Sinon en vous connectant au site officiel pardie !
+  En vous connectant au site officiel, parbleu ! : Découvrez les fonctionnalités de Deefy en toute simplicité et plongez dans l’univers musical en vous connectant dès maintenant !
 
 ⚙️ Technologie
 

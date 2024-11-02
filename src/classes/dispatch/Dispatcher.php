@@ -55,7 +55,7 @@ class Dispatcher
                     break;
                 case 'logout':
                     DeefyRepository::getInstance()->logoutUser();
-                    header("Location: TD12.php?action=default");
+                    header("Location: index.php?action=default");
                     break;
                 case 'delete-playlist':
                     $act = new DestroyPlaylistAction();
@@ -73,6 +73,9 @@ class Dispatcher
     }
 
 
+    /**
+     * @throws \Exception
+     */
     private function renderPage(string $html): void
     {
         DeefyRepository::getInstance()->VerifToken();

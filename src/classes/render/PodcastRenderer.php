@@ -3,9 +3,7 @@
 namespace iutnc\deefy\render;
 
 use iutnc\deefy\audio\lists\AudioList;
-use iutnc\deefy\audio\tracks\AudioTrack;
 use iutnc\deefy\audio\tracks\PodcastTrack;
-use iutnc\deefy\render\Renderer;
 
 class PodcastRenderer implements Renderer
 {

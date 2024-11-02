@@ -2,7 +2,7 @@
 
 namespace iutnc\deefy\action;
 
-use iutnc\deefy\action\Action;
+use Exception;
 use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
@@ -19,14 +19,15 @@ class AddUserAction extends Action
 {
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function execute(): string
     {
         unset($_SESSION['playlist']);
 
-        if (AuthnProvider::getSignedInUser()->id != -1) {  // si l'utilisateur est déjà connecté et essaie de se créer un compte
-            header("Location: TD12.php");
+        $user = AuthnProvider::getSignedInUser();
+        if ($user['id'] != -1) {   // si l'utilisateur est déjà connecté et essaie de se créer un compte
+            header("Location: index.php");
         }
 
         if ($this->http_method == "POST") {
@@ -34,12 +35,10 @@ class AddUserAction extends Action
             if ($rapport != "OK") {
                 return $rapport;
             } else {
-                $ret = "<h2> Votre compte a été créé</h2><br><br>";
-                $ret .= "Nom: {$_POST['name']}, Email: {$_POST['email']}, Age: {$_POST['age']} ans";
                 $rapport = DeefyRepository::getInstance()->addUser($_POST['email'], $_POST['password'], $_POST['name']);
                 if ($rapport == "OK"){
                     // on revient a la page d'acceuille
-                    header("Location: TD12.php");
+                    header("Location: index.php");
                 }
 
                 else if ($rapport == 'a') { // already
@@ -53,9 +52,9 @@ class AddUserAction extends Action
 
         } else if ($this->http_method == "GET") {
 
-            $ret = <<<HTML
+            return <<<HTML
                     <h2>Créer un compte</h2><br>
-                    <form id="form-add-user" action="TD12.php?action=add-user" method="POST">
+                    <form id="form-add-user" action="index.php?action=add-user" method="POST">
                         
                         <label for="name">Nom : </label>
                         <input type="text" id="name" name="name" placeholder="Votre nom" required autocomplete="name"> <br>
@@ -79,31 +78,28 @@ class AddUserAction extends Action
                     </form><br>
 
 HTML;
-            return $ret;
         }
+        return "";
     }
 
 
     public function sanitize(): string
     {
-        if (!isset($_POST['name']) || !isset($_POST['email']) || !isset($_POST['age']) || !isset($_POST['password'])) {
-            return "Tous les champs sont obligatoires.";
-        }
-        if (is_null($_POST['name']) || is_null($_POST['email']) || is_null($_POST['age']) || is_null($_POST['password'])) {
+        if (empty($_POST['name']) || empty($_POST['email']) || empty($_POST['age']) || empty($_POST['password'])) {
             return "Tous les champs sont obligatoires.";
         }
 
-        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        if (!$_POST['email'] = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             return "Adresse email invalide.";
         }
         $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
 
-        if (!filter_var($_POST['age'], FILTER_VALIDATE_INT) || $_POST['age'] < 10) {
-            return "L'âge doit être un nombre entier supérieur à 10.";
+        if (!filter_var($_POST['age'], FILTER_VALIDATE_INT) || $_POST['age'] < 13) {
+            return "Vous devez avoir au moins 13 ans pour vous créer un compte sans l'accord de vos parents.";
         }
         $_POST['age'] = filter_var($_POST['age'], FILTER_SANITIZE_NUMBER_INT);
 
-        $_POST['name'] = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+        $_POST['name'] = filter_var($_POST['name'], FILTER_SANITIZE_SPECIAL_CHARS);
 
         $password = $_POST['password'];
         // Vérifier la longueur et la complexité du mot de passe côté SERVEUR
@@ -115,7 +111,7 @@ HTML;
 
             return "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.";
         }
-        $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+        $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         return "OK";
     }

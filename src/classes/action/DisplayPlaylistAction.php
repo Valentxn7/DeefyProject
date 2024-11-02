@@ -8,41 +8,42 @@ namespace iutnc\deefy\action;
 use Exception;
 use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\auth\Authz;
-use iutnc\deefy\exception\AccessControlException;
 use iutnc\deefy\render\AudioListRenderer;
 use iutnc\deefy\repository\DeefyRepository;
 
 class DisplayPlaylistAction extends Action
 {
+    /**
+     * @throws Exception
+     */
     public function execute(): string
     {
         if (empty($_GET['id'])) {
-            return "Veuillez choisir une playlist";
+            return "Veuillez choisir une playlist.";
         }
         //echo "<br><br>1: " . var_dump($_GET['id']);
         $id = filter_var((int)$_GET['id'], FILTER_SANITIZE_NUMBER_INT);
         //echo "<br><br>2: " . var_dump($id);
         $user = AuthnProvider::getSignedInUser();
         $authz = new Authz($user);
-        $isPrivate = true;
 
         try {
             $playlist = DeefyRepository::getInstance()->findPlaylistById($id);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $e->getMessage();
         }  // si la playlist n'existe pas
 
-        if ($playlist->isPrivate == true) {
+        if ($playlist->isPrivate) {
 
             try {
                 $authz->checkRole(Authz::USER);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return "Sans compte, veuillez vous satisfaire des playlists publiques.";
             }
 
             try {
                 $authz->checkPlaylistOwner($id);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 return "Ce n'est pas bien de regarder les playlists des autres.";
             }
 
@@ -134,12 +135,11 @@ HTML;
 
         }
 
-        $html = <<<HTML
+        return <<<HTML
         <style>
         .content {
             display: flex;
             width: 100%;
-            max-width: 90%;
             max-width: 90%;
             gap: 20px;
             margin: 2% auto;
@@ -176,7 +176,6 @@ HTML;
             
         </div>
         HTML;
-        return $html;
     }
 
 

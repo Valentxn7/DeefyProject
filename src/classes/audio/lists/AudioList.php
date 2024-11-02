@@ -10,7 +10,7 @@ abstract class AudioList
     public const NO_GENRE = "N/A";
     public const NO_DATE = "0000-00-00";
     public const NO_ALBUM = "N/A";
-    public const NO_ANNEE = -1;
+    public const NO_ANNEE = 0;
     public const NO_NUMERO = -1;
     protected string $nom;
     protected int $nbpiste, $duree;
@@ -80,7 +80,7 @@ abstract class AudioList
      * • créer la classe AudioList en programmant un constructeur qui reçoit en paramètre le
      * nom de la liste et un tableau optionnel de piste qui prendra la valeur [ ] s'il est omis. Le
      * constructeur initialise les propriétés, notamment en calculant le nombre de pistes et la durée
-     * totale. La classe implante le getter magique __get() pour accéder au valeur des propriétés
+     * totale. La classe implante le getter magique __get() pour accéder aux valeurs des propriétés,
      * mais ne permet pas leur modification.
      */
 }

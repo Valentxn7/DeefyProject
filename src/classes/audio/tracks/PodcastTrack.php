@@ -3,7 +3,6 @@
 namespace iutnc\deefy\audio\tracks;
 
 use Exception;
-use iutnc\deefy\audio\tracks\AudioTrack;
 
 class PodcastTrack extends AudioTrack
 {

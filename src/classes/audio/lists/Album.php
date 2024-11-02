@@ -2,8 +2,6 @@
 
 namespace iutnc\deefy\audio\lists;
 
-use iutnc\deefy\audio\lists\AudioList;
-
 class Album extends AudioList
 {
     protected string $artiste, $album, $date;
@@ -16,17 +14,17 @@ class Album extends AudioList
         $this->date = $dat;
     }
 
-    public function set_artiste(string $art)
+    public function set_artiste(string $art): void
     {
         $this->artiste = $art;
     }
 
-    public function set_album(string $alb)
+    public function set_album(string $alb): void
     {
         $this->album = $alb;
     }
 
-    public function set_date(string $dat)
+    public function set_date(string $dat): void
     {
         $this->date = $dat;
     }

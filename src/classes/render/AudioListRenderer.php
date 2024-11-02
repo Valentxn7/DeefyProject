@@ -2,31 +2,33 @@
 
 namespace iutnc\deefy\render;
 
+use iutnc\deefy\audio\lists\AudioList;
 use iutnc\deefy\render as R;
 use iutnc\deefy\audio\tracks as T;
 
 class AudioListRenderer implements Renderer
 {
-    private \iutnc\deefy\audio\lists\AudioList $audioList;
+    private AudioList $audioList;
 
-    public function __construct(\iutnc\deefy\audio\lists\AudioList $al)
+    public function __construct(AudioList $al)
     {
         $this->audioList = $al;
     }
 
 
     /**
-     * @param int $alternative 1 for long, 2 for preview
+     * @param int $selector 1 for long, 2 for preview
      * @return string
      */
-    public function render(int $alternative): string
+    public function render(int $selector): string
     {
         if (sizeof($this->audioList->liste) === 0) {
-            return "La playlist {$this->audioList->nom} est vide";
+            return "La playlist {$this->audioList->nom} est vide.";
         } else {
             $cont = "<br> <b>{$this->audioList->nom} </b><br>";
 
-            if ($alternative != 2) {
+            if ($selector != 2) {
+                $rend = "";
                 for ($i = 0; $i < sizeof($this->audioList->liste); $i++) {
                     if ($this->audioList->liste[$i] instanceof T\AlbumTrack) {
                         $rend = new R\AlbumTrackRenderer($this->audioList->liste[$i]);
@@ -35,7 +37,7 @@ class AudioListRenderer implements Renderer
                             $rend = new R\PodcastRenderer($this->audioList->liste[$i]);
                         }
                     }
-                    if ($alternative == 1)
+                    if ($selector == 1)
                         $cont .= $rend->render(Renderer::LONG);
                     else
                         $cont .= $rend->render(Renderer::COMPACT);

@@ -6,6 +6,7 @@
 
 namespace iutnc\deefy\action;
 
+use Exception;
 use iutnc\deefy\audio\lists\AudioList;
 use iutnc\deefy\audio\tracks\PodcastTrack;
 use getID3;
@@ -15,10 +16,13 @@ use iutnc\deefy\repository\DeefyRepository;
 
 class AddPodcastTrackAction extends Action
 {
+    /**
+     * @throws Exception
+     */
     public function execute(): string
     {
         if (empty($_SESSION['playlist'])) {
-            return "Veuillez selectionner une playlist";
+            return "Veuillez selectionner une playlist.";
         }
         if ($this->http_method == "POST") {
             $this->sanitize();
@@ -27,14 +31,14 @@ class AddPodcastTrackAction extends Action
             $verif = new Authz($user);
             try {
                 $verif->checkRole(Authz::USER);
-            } catch (\Exception $e) {
-                return "Vous devez être connecté pour ajouter un podcast à une playlist";
+            } catch (Exception) {
+                return "Vous devez être connecté pour ajouter un podcast à une playlist.";
             }
 
             try {
                 $verif->checkPlaylistOwner($_SESSION['playlist']->id_bdd);
-            } catch (\Exception $e) {
-                return "Vous n'êtes pas autorisé à fouiller dans les affaires des autres";
+            } catch (Exception) {
+                return "Vous n'êtes pas autorisé à fouiller dans les affaires des autres.";
             }
 
 
@@ -48,7 +52,7 @@ class AddPodcastTrackAction extends Action
             $autorise = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav', 'audio/aac'];
 
             if (!isset($_FILES['inputfile']))
-                return "Fichier manquant ou type de fichier non autorisé<br>";
+                return "Fichier manquant ou type de fichier non autorisé.<br>";
 
             if ($_FILES['inputfile']['error'] === UPLOAD_ERR_OK) {
                 if (in_array($_FILES['inputfile']['type'], $autorise)) {
@@ -71,22 +75,22 @@ class AddPodcastTrackAction extends Action
                         DeefyRepository::getInstance()->addPodcastToPlaylist($track, $_SESSION['playlist']);
 
                         $_SESSION['playlist']->ajouter($track);
-                        header("Location: TD12.php?action=display-playlist&id={$_SESSION['playlist']->id_bdd}");
+                        header("Location: index.php?action=display-playlist&id={$_SESSION['playlist']->id_bdd}");
                         return "";
                     } else
-                        return "Hum, hum il y a un cheveu dans la soupe.<br>Le serveur n'a pas put traiter votre requête.<br>";;
+                        return "Hum, hum il y a un cheveu dans la soupe.<br>Le serveur n'a pas put traiter votre requête.<br>";
 
                 } else { // type de fichier non autorisé
-                    return "Type de fichier non autorisé<br>";
+                    return "Type de fichier non autorisé.<br>";
                 }
             } else { // échec du téléchargement
-                return "Echec du téléchargement du fichier<br>";
+                return "Echec du téléchargement du fichier.<br>";
             }
 
         } else if ($this->http_method == "GET") {
-            $ret = <<<HTML
+            return <<<HTML
                     <h2>Ajouter un podcast à la playlist</h2><br>
-                    <form id="form-add-track" action="TD12.php?action=add-Podcasttrack" method="POST" enctype="multipart/form-data">
+                    <form id="form-add-track" action="index.php?action=add-Podcasttrack" method="POST" enctype="multipart/form-data">
                
                         <label for="inputfile">Fichier : </label>
                         <input type="file" id="inputfile" name="inputfile" required aria-label="Ajouter un fichier audio" accept=".mp3, .wav, .ogg, .aac"> <br><br>
@@ -114,9 +118,8 @@ class AddPodcastTrackAction extends Action
                     </form > <br><br>               
 
 HTML;
-            return $ret;
         }
-        return "Error 418 : I'm a teapot";  // si jamais on arrive ici, c'est qu'il y a un problème, quelqu'un a touché à quelque chose niveau HTML, tant pis pour lui, il aura une erreur 418
+        return "Error 418 : I'm a teapot.";  // si jamais on arrive ici, c'est qu'il y a un problème, quelqu'un a touché à quelque chose niveau HTML, tant pis pour lui, il aura une erreur 418
     }
 
 
@@ -182,7 +185,7 @@ HTML;
     }
 }
 
-?>
+
 
 
 

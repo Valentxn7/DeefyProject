@@ -35,8 +35,8 @@ class Authz
     }
 
     /**
-     * La méthode checkPlaylistOwner’) qui reçoit en paramètre un ID de playlist et vérifie qu'elle
-     * appartient à l'utilisateur qui est connecté ou que l'utilisateur connecté à le rôle ADMIN
+     * La méthode checkPlaylistOwner qui reçoit en paramètre un ID de playlist et vérifie qu'elle
+     * appartient à l'utilisateur qui est connecté ou que l'utilisateur connecté au rôle ADMIN
      * (valeur 100 dans la table).
      *
      * @param int $playlistId

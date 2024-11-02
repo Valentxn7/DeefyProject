@@ -2,12 +2,17 @@
 
 namespace iutnc\deefy\action;
 
+use Exception;
 use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
 class DefaultAction extends Action
 {
     private static String $phrase = "Bienvenue, ";
+
+    /**
+     * @throws Exception
+     */
     public function execute(): string
     {
         unset($_SESSION['playlist']);
@@ -19,7 +24,7 @@ class DefaultAction extends Action
         return "<h3>" . DefaultAction::$phrase . $username . " !</h3>";
     }
 
-    public static function setPhrase(String $p)
+    public static function setPhrase(String $p): void
     {
         DefaultAction::$phrase = $p;
     }

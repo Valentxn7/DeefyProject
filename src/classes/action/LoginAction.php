@@ -2,7 +2,7 @@
 
 namespace iutnc\deefy\action;
 
-use iutnc\deefy\action\Action;
+use Exception;
 use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
@@ -12,14 +12,15 @@ use iutnc\deefy\repository\DeefyRepository;
 class LoginAction extends Action
 {
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function execute(): string
     {
         unset($_SESSION['playlist']);
 
-        if (AuthnProvider::getSignedInUser()->id != -1) {  // si l'utilisateur est déjà connecté et essaie de se reconnecter
-            header("Location: TD12.php");
+        $user = AuthnProvider::getSignedInUser();
+        if ($user['id'] != -1) {  // si l'utilisateur est déjà connecté et essaie de se reconnecter
+            header("Location: index.php");
         }
 
         if ($this->http_method == "POST") {
@@ -53,7 +54,7 @@ class LoginAction extends Action
     {
         return <<<HTML
             <h2>Connexion</h2><br>
-            <form id="form-login" action="TD12.php?action=login" method="POST">
+            <form id="form-login" action="index.php?action=login" method="POST">
                 <label for="email">Email : </label>
                 <input type="email" id="email" name="email" required autocomplete="email"> <br>
                 
@@ -69,22 +70,18 @@ HTML;
     private
     function sanitize(): string
     {
-        if (!isset($_POST['email']) || !isset($_POST['password'])) {
-            return "Tous les champs sont obligatoires.";
-        }
-
-        if (is_null($_POST['email']) || is_null($_POST['password'])) {
+        if (empty($_POST['email']) || empty($_POST['password'])) {
             return "Tous les champs sont obligatoires.";
         }
 
         // Filtrer l'email
-        if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        if (!$_POST['email'] = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             return "Adresse email invalide.";
         }
         $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
 
         // Filtrer le mot de passe
-        $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+        $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         return "OK";
     }

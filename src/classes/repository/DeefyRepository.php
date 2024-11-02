@@ -212,6 +212,7 @@ class DeefyRepository
     }
 
     /**
+     * Aurait du être utilisé pour afficher toutes les playlists, mais le sujet a décider qu'il y aurait getPlaylistById donc bon...
      * @return array de la bdd
      */
     public function allPlaylistRAW(): array
@@ -222,6 +223,7 @@ class DeefyRepository
     }
 
     /**
+     * Aurait du être utilisé pour afficher toutes les playlists, mais le sujet a décider qu'il y aurait getPlaylistById donc bon...
      * @return array d'objets Playlist
      */
     public function allPlaylistConverted(): array
@@ -278,6 +280,8 @@ class DeefyRepository
     }
 
     /**
+     * Fonction prête à l'emploi pour supprimer un utilisateur,
+     * mais pas d'interface pour la déclencher cliquable pour le moment
      * @throws Exception
      */
     public function DeleteUser(): void
@@ -357,9 +361,9 @@ class DeefyRepository
 
         while ($row = $stmt->fetch()) {
             $server_path = realpath($_SERVER['DOCUMENT_ROOT'] . "\dewweb\Deefy\sound\\");  // A CHANGER EN CAS DE CHANGEMENT DE CHEMIN
-            echo "<br><br>1: " . $row['filename'];
+//            echo "<br><br>1: " . $row['filename'];
             $filepath = str_replace("http://localhost\\dewweb\\Deefy\\sound\\", $server_path . "\\", $row['filename']);
-            echo "<br><br>2: " . $filepath;
+//            echo "<br><br>2: " . $filepath;
             if (file_exists($filepath)) {
                 unlink($filepath);  // on supprime le fichier
             } else {

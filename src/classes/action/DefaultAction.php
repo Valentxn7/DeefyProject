@@ -20,7 +20,6 @@ class DefaultAction extends Action
         DeefyRepository::getInstance()->VerifToken();
         $user = AuthnProvider::getSignedInUser();
         $username = $user['nom'];
-
         return "<h3>" . DefaultAction::$phrase . $username . " !</h3>";
     }
 

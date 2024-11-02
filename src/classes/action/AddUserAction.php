@@ -67,9 +67,9 @@ class AddUserAction extends Action
                         <label for="password">Mot de passe : </label>
                         <!-- pattern=".{8,}"   mon pattern de base -->
                         <input type="password" id="password" name="password"
-                               pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[/@$!%*?&])[A-Za-z\d@$/!%*?&]{8,}" 
-                               title="Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial /@$!%*?&."
-                               required > <br><br>
+                               pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                               title="Le mot de passe doit contenir au moins 8 caractères, une majuscule, un chiffre et un caractère spécial @$!%*?&."
+                               required> <br><br>
                         
                         <input type="submit" value="Valider"> <br>
                         <p>
@@ -111,6 +111,10 @@ HTML;
 
             return "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.";
         }
+
+        // Même si cela est parfois non recommandé, je filtre tout de même le mot de passe
+        // Et puis dans le meilleur des cas, cela crée une sécurité supplémentaire car me mdp est deja modifié avant le hashage
+        // Et dans le meilleur des cas, je me protège contre toutes sortes d'attaques possibles et inimaginables
         $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         return "OK";

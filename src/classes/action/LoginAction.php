@@ -80,7 +80,9 @@ HTML;
         }
         $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
 
-        // Filtrer le mot de passe
+        // Même si cela est parfois non recommandé, je filtre tout de même le mot de passe
+        // Et puis dans le meilleur des cas, cela crée une sécurité supplémentaire car me mdp est deja modifié avant le hashage
+        // Et dans le meilleur des cas, je me protège contre toutes sortes d'attaques possibles et inimaginables
         $_POST['password'] = filter_var($_POST['password'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         return "OK";

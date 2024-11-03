@@ -6,6 +6,10 @@ use Exception;
 use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
+/**
+ * Classe DefaultAction.
+ * Elle permet d'afficher un message de bienvenue personnalisé.
+ */
 class DefaultAction extends Action
 {
     private static String $phrase = "Bienvenue, ";

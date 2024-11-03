@@ -4,6 +4,7 @@ namespace iutnc\deefy\audio\tracks;
 
 use iutnc\deefy\exception\InvalidPropertyNameException;
 use iutnc\deefy\exception\InvalidPropertyValueException;
+
 /**
  * Classe mère servant d'héritage à toute classe comportant du son
  */

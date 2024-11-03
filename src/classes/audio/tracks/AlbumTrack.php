@@ -2,6 +2,10 @@
 
 namespace iutnc\deefy\audio\tracks;
 
+/**
+ * Classe AlbumTrack.
+ * Elle permet de représenter une piste d'album.
+ */
 class AlbumTrack extends AudioTrack
 {
     /**
@@ -21,8 +25,8 @@ class AlbumTrack extends AudioTrack
         $this->album = $alb_name;
         $this->numero = $num_piste;
         /**
-        $this->titre = $titre_piste;
-        $this->nom_fich = $path;
+         * $this->titre = $titre_piste;
+         * $this->nom_fich = $path;
          **/
     }
 

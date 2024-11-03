@@ -12,6 +12,10 @@ use iutnc\deefy\dispatch\Dispatcher;
 use PDO;
 use Random\RandomException;
 
+/**
+ * Classe DeefyRepository.
+ * Elle permet de représenter un dépôt de données pour l'application Deefy.
+ */
 class DeefyRepository
 {
     private PDO $pdo;
@@ -31,6 +35,7 @@ class DeefyRepository
     }
 
     /**
+     * Permet de récupérer une instance de DeefyRepository.
      * @throws Exception
      */
     public static function getInstance(): ?DeefyRepository
@@ -43,6 +48,7 @@ class DeefyRepository
     }
 
     /**
+     * Permet de configurer la connexion à la base de données.
      * @throws Exception
      */
     public static function setConfig(string $file): void
@@ -165,6 +171,11 @@ class DeefyRepository
 //        return $pl;
     }
 
+    /**
+     * Permet de mettre en base de données une playlist vide, ensuite en session.
+     * @param Playlist $pl la playlist à sauvegarder
+     * @return void
+     */
     public function saveEmptyPlaylist(Playlist $pl): void
     {
         // on créer la playlist
@@ -182,6 +193,11 @@ class DeefyRepository
         $_SESSION['playlist'] = $pl;
     }
 
+    /**
+     * Permet de sauvegarder un podcast en base de données.
+     * @param PodcastTrack $podcastTrack le podcast à sauvegarder
+     * @return bool true si la sauvegarde a réussi, false sinon
+     */
     public function savePodcastTrack(PodcastTrack $podcastTrack): bool
     {
         // on save le podcast
@@ -196,6 +212,11 @@ class DeefyRepository
             return false;
     }
 
+    /**
+     * Permet de sauvegarder une piste de musique en base de données.
+     * @param AlbumTrack $musique la piste de musique à sauvegarder
+     * @return bool true si la sauvegarde a réussi, false sinon
+     */
     public function saveMusiqueTrack(AlbumTrack $musique): bool
     {
         // on save le podcast
@@ -516,5 +537,51 @@ class DeefyRepository
 
         return $stmt->fetchColumn() > 0;
     }
+
+    /**
+     * @throws Exception
+     */
+    function supprimerTrack($playlist_id, $place): void
+    {
+        $query = "SELECT id_track, type FROM playlist2track 
+                WHERE id_pl = :id_playlist AND no_piste_dans_liste = :num";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['id_playlist' => $playlist_id, 'num' => $place]);
+        $result = $stmt->fetch();
+        if (!$result) {
+            throw new Exception("La piste n'a pas été trouvée dans la playlist");
+        }
+        $id = $result['id_track'];
+        $type = $result['type'];
+
+        // supp ds la table playlist2track
+        $query = "DELETE FROM playlist2track WHERE id_pl = :id_playlist AND id_track = :id_track AND no_piste_dans_liste = :num";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['id_playlist' => $playlist_id, 'id_track' => $id, 'num' => $place]);
+
+        $type = $type == 'M' ? 'musique' : 'podcast';
+
+        // supp ds la table musique ou podcast
+        $query = "SELECT filename FROM $type WHERE id = :id_track";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['id_track' => $id]);
+        $file_path = $stmt->fetchColumn();
+        $server_path = realpath($_SERVER['DOCUMENT_ROOT'] . "\dewweb\Deefy\sound\\");  // A CHANGER EN CAS DE CHANGEMENT DE CHEMIN
+        $file_path = str_replace("http://localhost\\dewweb\\Deefy\\sound\\", $server_path . "\\", $file_path);
+        if ($file_path && file_exists($file_path)) {
+            unlink($file_path);
+        } else
+            throw new Exception("Erreur lors de la suppression du fichier audio");
+        $query = "DELETE FROM $type WHERE id = :id_track";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['id_track' => $id]);
+
+        // Réindente la playlist dans le bon ordre
+        $query = "UPDATE playlist2track SET no_piste_dans_liste = no_piste_dans_liste - 1 
+            WHERE id_pl = :id_playlist AND no_piste_dans_liste > :position";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['id_playlist' => $playlist_id, 'position' => $place]);
+    }
+
 
 }

@@ -8,6 +8,7 @@ use iutnc\deefy\repository\DeefyRepository;
 
 /**
  * Classe LoginAction pour gérer la connexion des utilisateurs.
+ * Elle permet de vérifier les informations d'identification et de connecter l'utilisateur.
  */
 class LoginAction extends Action
 {
@@ -39,7 +40,7 @@ class LoginAction extends Action
                     $ret::setPhrase("Heureux de te revoir, ");
                     return $ret->execute();  // On revient à la page d'accueil
                     //return "Connexion réussie<br>Bienvenue, {$_SESSION['user_info']['nom']} !</h2>";
-            }
+                }
             }
         } else {
             if ($this->http_method == "GET") {

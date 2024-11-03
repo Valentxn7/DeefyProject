@@ -8,6 +8,10 @@ use iutnc\deefy\auth\Authz;
 use iutnc\deefy\render\AudioListRenderer;
 use iutnc\deefy\repository\DeefyRepository;
 
+/**
+ * Classe AllPlaylistAction.
+ * Elle permet d'afficher toutes les playlists d'une manière plus courte et concise.
+ */
 class AllPlaylistAction extends Action
 {
     /**
@@ -55,7 +59,7 @@ class AllPlaylistAction extends Action
 
                     array_push($privList, ['pl' => $pl, 'id' => $id]);
                 } catch (Exception) {
-                }  // on ne fait rien l'utilisateur n'a rien demandé on trie juste les playlists
+                }  // on ne fait rien l'utilisateur n'a rien demandé, on trie juste les playlists
             }
         }
 

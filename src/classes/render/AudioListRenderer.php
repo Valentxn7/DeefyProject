@@ -6,6 +6,10 @@ use iutnc\deefy\audio\lists\AudioList;
 use iutnc\deefy\render as R;
 use iutnc\deefy\audio\tracks as T;
 
+/**
+ * Classe AudioListRenderer.
+ * Elle permet de représenter un rendu d'une liste audio.
+ */
 class AudioListRenderer implements Renderer
 {
     private AudioList $audioList;
@@ -17,10 +21,11 @@ class AudioListRenderer implements Renderer
 
 
     /**
+     * Rendu de la liste audio.
      * @param int $selector 1 for long, 2 for preview
      * @return string
      */
-    public function render(int $selector): string
+    public function render(int $selector, $index = null): string
     {
         if (sizeof($this->audioList->liste) === 0) {
             return "La playlist {$this->audioList->nom} est vide.";
@@ -37,9 +42,10 @@ class AudioListRenderer implements Renderer
                             $rend = new R\PodcastRenderer($this->audioList->liste[$i]);
                         }
                     }
-                    if ($selector == 1)
-                        $cont .= $rend->render(Renderer::LONG);
-                    else
+                    if ($selector == 1) {
+                        $index = $i + 1;
+                        $cont .= $rend->render(Renderer::LONG, $index);
+                    } else
                         $cont .= $rend->render(Renderer::COMPACT);
                 }
 

@@ -1,7 +1,4 @@
 <?php
-/**
- * AFFICHER LA PLAYLIST EN SESSION
- */
 
 namespace iutnc\deefy\action;
 
@@ -11,6 +8,12 @@ use iutnc\deefy\auth\Authz;
 use iutnc\deefy\render\AudioListRenderer;
 use iutnc\deefy\repository\DeefyRepository;
 
+/**
+ * Classe DisplayPlaylistAction.
+ * Elle permet d'afficher une playlist d'une manière plus détaillée et avec des actions possibles.
+ * Elle vérifie les permissions pour afficher la playlist.
+ * Elle stocke la playlist dans la session pour les actions suivantes.
+ */
 class DisplayPlaylistAction extends Action
 {
     /**

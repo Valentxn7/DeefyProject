@@ -2,6 +2,10 @@
 
 namespace iutnc\deefy\auth;
 
+/**
+ * La classe AuthnProvider qui permet de gérer l’authentification.
+ * Elle fournit une méthode getSignedInUser() qui retourne l’utilisateur stocké en session.
+ */
 class AuthnProvider
 {
     /**

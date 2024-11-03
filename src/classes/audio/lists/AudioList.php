@@ -4,6 +4,10 @@ namespace iutnc\deefy\audio\lists;
 
 use Exception;
 
+/**
+ * Classe AudioList.
+ * Elle permet de représenter une liste audio.
+ */
 abstract class AudioList
 {
     public const NO_AUTEUR = "Inconnue";
@@ -18,6 +22,11 @@ abstract class AudioList
     protected int $id_bdd;
     protected bool $isPrivate = true;
 
+    /**
+     * Constructeur de la classe AudioList.
+     * @param string $name Le nom de la liste.
+     * @param array $arr Un tableau de pistes.
+     */
     public function __construct(string $name, array $arr = [])
     {
         $this->nom = $name;
@@ -40,6 +49,10 @@ abstract class AudioList
             throw new Exception("invalid property : " . $name);
     }
 
+    /**
+     * Pemet d'actualiser la durée et le nombre de pistes de la liste.
+     * @return void
+     */
     public function MAJ_liste_duree_nb(): void
     {
         $this->duree = 0;

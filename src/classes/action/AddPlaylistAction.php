@@ -1,8 +1,5 @@
 <?php
 
-/**
- * CREER 1 PLAYLIST EN SESSION
- */
 namespace iutnc\deefy\action;
 
 use Exception;
@@ -11,6 +8,10 @@ use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\auth\Authz;
 use iutnc\deefy\repository\DeefyRepository;
 
+/**
+ * Classe AddPlaylistAction.
+ * Elle permet de créer une nouvelle playlist.
+ */
 class AddPlaylistAction extends Action
 {
     /**

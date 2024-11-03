@@ -7,14 +7,12 @@ use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
 /**
- * Créer la classe AddUserAction puis ajouter le cas $action = 'add-user' dans le sélecteur
- * du dispatcher.
- * Si la requête HTTP est de type GET, la page contient un formulaire avec les champs Nom, Email,
- * Âge, et un bouton Connexion. Utiliser les types d’input adaptés.
- * Sinon, si la requête HTTP est de type POST, la page affiche la valeur des champs dans le message :
- * "Nom:Toto, Email:toto@gmail.com, Age:22 ans".
- * Filtrer les valeurs des champs avant de les afficher pour empêcher l’attaque XSS ( filter_var() )
- */
+ * Classe AddUserAction.
+ * Elle permet de créer un compte utilisateur.
+ * Elle vérifie les données saisies et les enregistre dans la base de données.
+ * Elle redirige vers la page d'accueil si l'utilisateur est déjà connecté.
+ * Elle affiche un formulaire de création de compte si l'utilisateur n'est pas connecté.
+**/
 class AddUserAction extends Action
 {
 

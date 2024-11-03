@@ -6,8 +6,17 @@ use Exception;
 use iutnc\deefy\exception\AccessControlException;
 use iutnc\deefy\repository\DeefyRepository;
 
+/**
+ * La classe Authz qui permet de gérer l’autorisation.
+ * Elle fournit des méthodes pour vérifier les droits d’accès.
+ * Elle fournit des constantes pour les rôles.
+ * Elle reçoit un tableau d’informations utilisateur en paramètre.
+ */
 class Authz
 {
+    /**
+     * Constantes pour les rôles
+     */
     public const ADMIN = 100;
     public const MODO = 50;
     public const USER = 10;

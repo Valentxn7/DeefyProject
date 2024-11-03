@@ -43,7 +43,6 @@ class AddAlbumTrackAction extends Action
             }
 
 
-
             $base_sys = realpath($_SERVER['DOCUMENT_ROOT']);  // C:\xampp\htdocs pour STOCKER LES FICHIERS
             $base_access = "http://" . $_SERVER['HTTP_HOST'];  // http://localhost/ pour ACCEDER AUX FICHIERS COTE CLIENT
 
@@ -158,7 +157,7 @@ HTML;
             $_POST['genre'] = !empty($_POST['genre']) ? filter_var($_POST['genre'], FILTER_SANITIZE_SPECIAL_CHARS)
                 : (isset($fileInfo['tags']['id3v2']['genre'][0]) ? filter_var($fileInfo['tags']['id3v2']['genre'][0], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_GENRE);
 
-            $_POST['artist'] = !empty($_POST['artist']) ? filter_var($_POST['artist'], FILTER_SANITIZE_SPECIAL_CHARS): (isset($fileInfo['tags']['id3v2']['artist'][0]) ? filter_var($fileInfo['tags']['id3v2']['artist'][0], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_AUTEUR);
+            $_POST['artist'] = !empty($_POST['artist']) ? filter_var($_POST['artist'], FILTER_SANITIZE_SPECIAL_CHARS) : (isset($fileInfo['tags']['id3v2']['artist'][0]) ? filter_var($fileInfo['tags']['id3v2']['artist'][0], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_AUTEUR);
 
             $_POST['date'] = !empty($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_SPECIAL_CHARS)
                 : (isset($fileInfo['tags']['id3v2']['year'][0]) ? filter_var($fileInfo['tags']['id3v2']['year'][0], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_DATE);
@@ -175,7 +174,7 @@ HTML;
 
             $_POST['genre'] = !empty($_POST['genre']) ? filter_var($_POST['genre'], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_GENRE;
             $_POST['artist'] = !empty($_POST['artist']) ? filter_var($_POST['artist'], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_AUTEUR;
-            $_POST['date'] =  !empty($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_DATE;
+            $_POST['date'] = !empty($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_DATE;
             $_POST['title'] = !empty($_POST['title']) ? filter_var($_POST['title'], FILTER_SANITIZE_SPECIAL_CHARS)
                 : filter_var($_FILES['inputfile']['name'], FILTER_SANITIZE_SPECIAL_CHARS);
 

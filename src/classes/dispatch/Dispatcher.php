@@ -9,6 +9,7 @@ use iutnc\deefy\action\AddUserAction;
 use iutnc\deefy\action\AllPlaylistAction;
 use iutnc\deefy\action\DefaultAction;
 use iutnc\deefy\action\DestroyPlaylistAction;
+use iutnc\deefy\action\DestroyTrackAction;
 use iutnc\deefy\action\DisplayPlaylistAction;
 use iutnc\deefy\action\LoginAction;
 use iutnc\deefy\auth\AuthnProvider;
@@ -24,11 +25,12 @@ class Dispatcher
     }
 
     /**
+     * Fonction qui exécute l'action demandée
      * @throws \Exception
      */
     public function run(): void
     {
-        if (($_SERVER['REQUEST_METHOD'] !== "POST") && ($_SERVER['REQUEST_METHOD'] !== "GET") )
+        if (($_SERVER['REQUEST_METHOD'] !== "POST") && ($_SERVER['REQUEST_METHOD'] !== "GET"))
             $this->renderPage("Erreur 418 : I'm a teapot");
         else {
             switch ($this->action) {
@@ -60,6 +62,9 @@ class Dispatcher
                 case 'delete-playlist':
                     $act = new DestroyPlaylistAction();
                     break;
+                case 'delete-track':
+                    $act = new DestroyTrackAction();
+                    break;
                 case 'display-playlist':
                     $act = new DisplayPlaylistAction();
                     break;
@@ -74,13 +79,14 @@ class Dispatcher
 
 
     /**
+     * Fonction qui affiche la page HTML
+     * @param string $html le code HTML à afficher
      * @throws \Exception
      */
     private function renderPage(string $html): void
     {
         DeefyRepository::getInstance()->VerifToken();
         $user = AuthnProvider::getSignedInUser();
-        $username = $user['nom'];
         $logInOrOut = $user['id'] == -1 ? "<a href='?action=login'>Connexion</a>" : "<a href='?action=logout'>Déconnexion</a>";
 
         $ret = <<<HTML
@@ -105,13 +111,13 @@ class Dispatcher
                 <li id="playlist"><a href="?action=playlists">Playlists</a></li>
                 <li id="add"><a href="?action=add-playlist">Ajouter Playlist</a></li>
                 <!--<li><a href="?action=add-track">Ajouter Piste</a></li>-->
-                <li id="log">{$logInOrOut}</li>
+                <li id="log">$logInOrOut</li>
             </ul>
         </nav>
     </header>
     <main>
         <div class="content">
-            {$html}
+            $html
         </div>
     </main>
     <footer>

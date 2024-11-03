@@ -6,10 +6,10 @@ use Exception;
 use iutnc\deefy\repository\DeefyRepository;
 
 /**
- * Classe DestroyPlaylistAction.
- * Elle permet de supprimer une playlist.
+ * Classe DestroyTrackAction.
+ * Elle permet de supprimer un track d'une playlist.
  */
-class DestroyPlaylistAction extends Action
+class DestroyTrackAction extends Action
 {
     /**
      * @throws Exception
@@ -21,13 +21,16 @@ class DestroyPlaylistAction extends Action
         if (empty($_SESSION['playlist'])) {
             return "Veuillez selectionner une playlist.";
         }
+        if (empty($_GET['pos'])) {
+            return "Veuillez selectionner présent dans votre playlist.";
+        }
 
         try {
-            DeefyRepository::getInstance()->deletePlaylist($_SESSION['playlist']->id_bdd);
+            DeefyRepository::getInstance()->supprimerTrack($_SESSION['playlist']->id_bdd, $_GET['pos']);
         } catch (Exception $e) {
             return $e->getMessage();
         }
-        header("Location: index.php?action=playlists");
+        header("Location: index.php?action=display-playlist&id=" . $_SESSION['playlist']->id_bdd);
         return "";
     }
 }

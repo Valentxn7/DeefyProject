@@ -4,6 +4,10 @@ namespace iutnc\deefy\audio\tracks;
 
 use Exception;
 
+/**
+ * Classe PodcastTrack.
+ * Elle permet de représenter une piste de podcast.
+ */
 class PodcastTrack extends AudioTrack
 {
     private string $date, $auteur;
@@ -12,8 +16,8 @@ class PodcastTrack extends AudioTrack
     {
         parent::__construct($titre, $path);
         /**
-        $this->titre = $titre_piste;
-        $this->nom_fich = $path;
+         * $this->titre = $titre_piste;
+         * $this->nom_fich = $path;
          **/
     }
 
@@ -27,7 +31,7 @@ class PodcastTrack extends AudioTrack
      */
     public function __get(string $name): string
     {
-        if (property_exists ($this, $name)) return $this->$name;
+        if (property_exists($this, $name)) return $this->$name;
         else
             throw new Exception("Introuvable : " . $name);
     }

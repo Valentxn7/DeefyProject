@@ -5,7 +5,10 @@ namespace iutnc\deefy\render;
 use iutnc\deefy\audio\lists\AudioList;
 use iutnc\deefy\audio\tracks\AlbumTrack;
 
-
+/**
+ * Classe AlbumTrackRenderer.
+ * Elle permet de représenter un rendu d'une piste d'album.
+ */
 class AlbumTrackRenderer implements Renderer
 {
     private AlbumTrack $albumTrack;
@@ -16,11 +19,11 @@ class AlbumTrackRenderer implements Renderer
     }
 
     /**
-     * ex3
-     * @param int $selector
-     * @return string
+     * Rendu d'une piste d'album.
+     * @param int $selector le sélecteur de rendu, Renderer::COMPACT ou Renderer::LONG
+     * @return string le rendu de la piste d'album
      */
-    public function render(int $selector): string
+    public function render(int $selector, $index = null): string
     {
         $duree_seconds = $this->albumTrack->duree;  // Formate en MM:SS
         $minutes = floor($duree_seconds / 60);
@@ -41,8 +44,15 @@ class AlbumTrackRenderer implements Renderer
                 $ret .= ($this->albumTrack->artiste == AudioList::NO_AUTEUR) ? "" : " - {$this->albumTrack->artiste}";  // s'il n'y a pas d'auteur on affiche rien sinon on affiche l'auteur
                 $ret .= ($this->albumTrack->genre == AudioList::NO_GENRE) ? "" : " - {$this->albumTrack->genre}";
                 $ret .= ($this->albumTrack->annee == AudioList::NO_ANNEE) ? "" : " - {$this->albumTrack->annee}";
+
+                // merci internet d'avoir créer des x plus petits et jolie
+                $supp = <<<HTML
+                                    <a href='index.php?action=delete-track&pos=$index'>
+                                    <button class="track-delete-button" title="Supprimer">×</button>
+                                    </a>
+                        HTML;
                 $ret .= " - " . sprintf("%02d:%02d", $minutes, $seconds) . "<br> <br> 
-                        <audio id='audioPlayer' controls src='{$this->albumTrack->nom_fich}'> </audio> <br>";
+                        $supp <audio id='audioPlayer' controls src='{$this->albumTrack->nom_fich}'> </audio> <br>";
                 return $ret;
 
             default:

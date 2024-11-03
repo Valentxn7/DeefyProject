@@ -2,6 +2,10 @@
 
 namespace iutnc\deefy\audio\lists;
 
+/**
+ * Classe Album.
+ * Elle permet de représenter un album.
+ */
 class Album extends AudioList
 {
     protected string $artiste, $album, $date;

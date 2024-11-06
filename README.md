@@ -1,4 +1,4 @@
-## ***/!\ N'oubliez de lire absolument le PDF DE RAPPORT DANS LE ZIP, c'est lui qui contient tout /!\***
+## **/!\ N'oubliez de lire absolument le PDF DE RAPPORT DANS LE ZIP, c'est lui qui contient tout /!\ **
 
 🎶 Deefy - La Fusion Suprême entre Deezer et Spotify 🎶
 

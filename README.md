@@ -1,5 +1,7 @@
 ## **/!\ N'oubliez de lire absolument le PDF DE RAPPORT DANS LE ZIP, c'est lui qui contient tout /!\ **
 
+### malheuresement, webetu ne supporte pas l'envoie de mail, et génère un Gateway Timeout, je vous invite à tester cette fonctionnalité sur un autre serveur ou sur xammp car j'y ai passé beaucoup de temps et pour la beauté du mail !
+
 🎶 Deefy - La Fusion Suprême entre Deezer et Spotify 🎶
 
 Bienvenue sur Deefy, où Deezer et Spotify fusionnent dans un cocktail musical aussi rafraîchissant qu'une playlist de hits estivaux. Parce qu'on voulait le meilleur des deux mondes, mais sans le prix de l'abonnement premium. 😉

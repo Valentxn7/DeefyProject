@@ -1,3 +1,5 @@
+## ***/!\ N'oubliez de lire absolument le PDF DE RAPPORT DANS LE ZIP, c'est lui qui contient tout /!\***
+
 🎶 Deefy - La Fusion Suprême entre Deezer et Spotify 🎶
 
 Bienvenue sur Deefy, où Deezer et Spotify fusionnent dans un cocktail musical aussi rafraîchissant qu'une playlist de hits estivaux. Parce qu'on voulait le meilleur des deux mondes, mais sans le prix de l'abonnement premium. 😉

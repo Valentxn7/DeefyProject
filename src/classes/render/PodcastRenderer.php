@@ -19,11 +19,13 @@ class PodcastRenderer implements Renderer
     }
 
     /**
-     * ex5
-     * @param int $selector
-     * @return string
+     * Rendu de la liste audio.
+     * @param int $selector , 1 for long, 2 for preview
+     * @param bool $isPrivate , vrai si la playlist appartient à un user
+     * @param null $index , index de la piste (pour la suppression)
+     * @return string le rendu
      */
-    public function render(int $selector, $index = null): string
+    public function render(int $selector, bool $isPrivate, $index = null): string
     {
         $duree_seconds = $this->podcast->duree;  // Formate en MM:SS
         $minutes = floor($duree_seconds / 60);
@@ -42,13 +44,25 @@ class PodcastRenderer implements Renderer
                 $ret .= ($this->podcast->date === AudioList::NO_DATE) ? "" : " - {$this->podcast->date}";
                 $ret .= ($this->podcast->genre === AudioList::NO_GENRE) ? "" : " - {$this->podcast->genre}";
 
-                $supp = <<<HTML
-                                    <a class="track-delete-button" href='index.php?action=delete-track&pos=$index'>
+                // merci internet d'avoir créer des x plus petits et jolie
+                if ($isPrivate) {
+                    $supp = <<<HTML
+                        <div class="audio-player">
+                                    <a href='index.php?action=delete-track&pos=$index' class="track-delete-button">
                                     ×
                                     </a>
                         HTML;
+
+                    $ferm = "</div>";
+                } else {
+                    $supp = "";
+                    $ferm = "";
+                }
+
+                $path = "sound\\" . $this->podcast->nom_fich;
+
                 $ret .= " - " . sprintf("%02d:%02d", $minutes, $seconds) . "<br> <br> 
-                        $supp <audio id='audioPlayer' controls src='{$this->podcast->nom_fich}'> </audio> <br>";
+                        $supp <audio id='audioPlayer' controls src='{$path}'> </audio> {$ferm} <br>";
                 return $ret;
 
             default:

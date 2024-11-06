@@ -2,6 +2,7 @@
 
 namespace iutnc\deefy\dispatch;
 
+use iutnc\deefy\action\ActionResetPassword;
 use iutnc\deefy\action\AddAlbumTrackAction;
 use iutnc\deefy\action\AddPlaylistAction;
 use iutnc\deefy\action\AddPodcastTrackAction;
@@ -12,6 +13,7 @@ use iutnc\deefy\action\DestroyPlaylistAction;
 use iutnc\deefy\action\DestroyTrackAction;
 use iutnc\deefy\action\DisplayPlaylistAction;
 use iutnc\deefy\action\LoginAction;
+use iutnc\deefy\action\PushRstTokenAction;
 use iutnc\deefy\auth\AuthnProvider;
 use iutnc\deefy\repository\DeefyRepository;
 
@@ -31,7 +33,7 @@ class Dispatcher
     public function run(): void
     {
         if (($_SERVER['REQUEST_METHOD'] !== "POST") && ($_SERVER['REQUEST_METHOD'] !== "GET"))
-            $this->renderPage("Erreur 418 : I'm a teapot");
+            $this->renderPage("Erreur 418 : I'm a teapot");  // Un peu d'humour pour celui qui s'amuserait à envoyer une requête autre que POST ou GET
         else {
             switch ($this->action) {
                 case 'default':
@@ -56,8 +58,18 @@ class Dispatcher
                     $act = new LoginAction();
                     break;
                 case 'logout':
-                    DeefyRepository::getInstance()->logoutUser();
+                    try {
+                        DeefyRepository::getInstance()->logoutUser();
+                    } catch (\Exception $e) {
+                        $this->renderPage($e->getMessage());
+                    }
                     header("Location: index.php?action=default");
+                    break;
+                case 'reset-password':
+                    $act = new ActionResetPassword();
+                    break;
+                case 'pushtoken':
+                    $act = new PushRstTokenAction();
                     break;
                 case 'delete-playlist':
                     $act = new DestroyPlaylistAction();
@@ -85,7 +97,7 @@ class Dispatcher
      */
     private function renderPage(string $html): void
     {
-        DeefyRepository::getInstance()->VerifToken();
+        DeefyRepository::getInstance()->verifToken();
         $user = AuthnProvider::getSignedInUser();
         $logInOrOut = $user['id'] == -1 ? "<a href='?action=login'>Connexion</a>" : "<a href='?action=logout'>Déconnexion</a>";
 

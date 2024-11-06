@@ -135,40 +135,40 @@ class DeefyRepository
             }
         }
         return $pl;
-//        $query = "SELECT * FROM playlist2track WHERE id_pl = :idPl";  // on récupère les pistes associées
-//        $stmt = $this->pdo->prepare($query);
-//        $stmt->execute(['idPl' => $id]);
-//
-//        while (!$res = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-//            if ($res['type'] == 'P') {
-//                $query = "SELECT * FROM podcast WHERE id = :id";
-//                $stmt = $this->pdo->prepare($query);
-//                $stmt->execute(['id' => $res['id_track']]);
-//                $res = $stmt->fetch(\PDO::FETCH_ASSOC);
-//                $pod = new PodcastTrack($res['titre'], $res['filename']);
-//                $pod->id_bdd = $res['id'];
-//                $pod->duree = $res['duree'];
-//                $pod->auteur = $res['auteur_podcast'];
-//                $pod->date = $res['date_podcast'];
-//                $pod->genre = $res['genre'];
-//                $pl->ajouter($pod);
-//            } else {
-//                if ($res['type'] == 'M') {
-//                    $query = "SELECT * FROM musique WHERE id = :id";
-//                    $stmt = $this->pdo->prepare($query);
-//                    $stmt->execute(['id' => $res['id_track']]);
-//                    $res = $stmt->fetch(\PDO::FETCH_ASSOC);
-//                    $mus = new AlbumTrack($res['titre'], $res['filename'], $res['album'], $res['numero']);
-//                    $mus->id_bdd = $res['id'];
-//                    $mus->duree = $res['duree'];
-//                    $mus->artiste = $res['artiste'];
-//                    $mus->genre = $res['genre'];
-//                    $pl->ajouter($mus);
-//                }
-//            }
-//        }
-//
-//        return $pl;
+        /*        $query = "SELECT * FROM playlist2track WHERE id_pl = :idPl";  // on récupère les pistes associées
+                $stmt = $this->pdo->prepare($query);
+                $stmt->execute(['idPl' => $id]);
+
+                while (!$res = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                    if ($res['type'] == 'P') {
+                        $query = "SELECT * FROM podcast WHERE id = :id";
+                        $stmt = $this->pdo->prepare($query);
+                        $stmt->execute(['id' => $res['id_track']]);
+                        $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+                        $pod = new PodcastTrack($res['titre'], $res['filename']);
+                        $pod->id_bdd = $res['id'];
+                        $pod->duree = $res['duree'];
+                        $pod->auteur = $res['auteur_podcast'];
+                        $pod->date = $res['date_podcast'];
+                        $pod->genre = $res['genre'];
+                        $pl->ajouter($pod);
+                    } else {
+                        if ($res['type'] == 'M') {
+                            $query = "SELECT * FROM musique WHERE id = :id";
+                            $stmt = $this->pdo->prepare($query);
+                            $stmt->execute(['id' => $res['id_track']]);
+                            $res = $stmt->fetch(\PDO::FETCH_ASSOC);
+                            $mus = new AlbumTrack($res['titre'], $res['filename'], $res['album'], $res['numero']);
+                            $mus->id_bdd = $res['id'];
+                            $mus->duree = $res['duree'];
+                            $mus->artiste = $res['artiste'];
+                            $mus->genre = $res['genre'];
+                            $pl->ajouter($mus);
+                        }
+                    }
+                }
+
+                return $pl;*/
     }
 
     /**
@@ -257,7 +257,7 @@ class DeefyRepository
         foreach ($result as $row) {
             $pl = new Playlist($row['nom']);
             $pl->setID($row['id']);
-            array_push($playlists, $pl);
+            $playlists[] = $pl;  // ajout
         }
 
         return $playlists;
@@ -271,12 +271,16 @@ class DeefyRepository
 
         $liste_id = [];
         foreach ($result as $row) {
-            array_push($liste_id, $row['id']);
+            $liste_id[] = $row['id']; // ajout
         }
         return $liste_id;
     }
 
     /**
+     * @param string $email l'email de l'utilisateur
+     * @param string $password le mot de passe de l'utilisateur
+     * @param string $username le nom de l'utilisateur
+     * @return string "OK" si l'ajout a réussi, "KO" si l'ajout a échoué, "a" si l'utilisateur existe déjà
      * @throws RandomException
      */
     public function addUser(string $email, string $password, string $username): string
@@ -289,7 +293,7 @@ class DeefyRepository
             $query = "INSERT INTO user (email, passwd, role, username) VALUES (:email, :password, :role, :username)";
             $stmt = $this->pdo->prepare($query);
             if ($stmt->execute(['email' => $email, 'password' => $hash, 'username' => $username, 'role' => Authz::USER])) {
-                $this->AfterLoginUser($this->pdo->lastInsertId());  // atribution du token
+                $this->afterLoginUser($this->pdo->lastInsertId());  // atribution du token
                 $_SESSION['user_info'] = [
                     'id' => $this->pdo->lastInsertId(),
                     'nom' => $username,
@@ -305,7 +309,7 @@ class DeefyRepository
      * mais pas d'interface pour la déclencher cliquable pour le moment
      * @throws Exception
      */
-    public function DeleteUser(): void
+    public function deleteUser(): void
     {
         $user = AuthnProvider::getSignedInUser();
         $query = "DELETE FROM user WHERE id = :id_user";
@@ -313,9 +317,13 @@ class DeefyRepository
         if ($stmt->execute(['id_user' => $user['id']])) {
             $this->logoutUser();
         }
-        // TODO : Supprimer les playlists et les pistes associées
+        // TODO : Supprimer les playlists et les pistes associées (fonction deja programmée)
     }
 
+    /**
+     * @param string $email l'email de l'utilisateur
+     * @return bool true si l'utilisateur existe, false sinon
+     */
     public function checkUser(string $email): bool
     {
         $query = "SELECT * FROM user WHERE email = :email";
@@ -346,6 +354,8 @@ class DeefyRepository
     }
 
     /**
+     * @param AlbumTrack $musique la musique à ajouter
+     * @param Playlist $pl la playlist à laquelle ajouter la musique
      * @throws Exception
      */
     public function addMusiqueToPlaylist(AlbumTrack $musique, Playlist $pl): void
@@ -362,6 +372,7 @@ class DeefyRepository
     }
 
     /**
+     * @param int $pl_id l'id de la playlist à supprimer
      * @throws Exception
      */
     public function deletePlaylist(int $pl_id): void
@@ -381,9 +392,9 @@ class DeefyRepository
         $stmt->execute(['playlist_id1' => $pl_id, 'playlist_id2' => $pl_id]);
 
         while ($row = $stmt->fetch()) {
-            $server_path = realpath($_SERVER['DOCUMENT_ROOT'] . "\dewweb\Deefy\sound\\");  // A CHANGER EN CAS DE CHANGEMENT DE CHEMIN
+            $server_path = realpath($_SERVER['DOCUMENT_ROOT'] . "\dewweb\Deefy\sound");  // A CHANGER EN CAS DE CHANGEMENT DE CHEMIN
 //            echo "<br><br>1: " . $row['filename'];
-            $filepath = str_replace("http://localhost\\dewweb\\Deefy\\sound\\", $server_path . "\\", $row['filename']);
+            $filepath = $server_path . "\\" . $row['filename'];
 //            echo "<br><br>2: " . $filepath;
             if (file_exists($filepath)) {
                 unlink($filepath);  // on supprime le fichier
@@ -424,12 +435,13 @@ class DeefyRepository
 
 
     /**
+     * @param int $userId l'id de l'utilisateur
      * @throws RandomException
      */
-    function AfterLoginUser($userId): void
+    function afterLoginUser(int $userId): void
     {
         // on efface l'ancien token
-        $this->DeleteActualToken($userId);
+        $this->deleteActualToken($userId);
 
         // on génère un nouveau token
         $token = bin2hex(random_bytes(120)); // CA FAIT LE DOUBLE EN TAILLE !!!!!
@@ -448,9 +460,11 @@ class DeefyRepository
 
     /**
      * Doit uniquement être appelée par l'extérieur pour verif !!
-     * @return bool
+     * La fonction vérifie si le token est valide et le remplace si besoin.
+     * Ensuite elle remplit les infos de session.
+     * @return bool true si le token est valide, false sinon
      */
-    function VerifToken(): bool
+    function verifToken(): bool
     {
         if (isset($_COOKIE['remember_me'])) {
             $token = $_COOKIE['remember_me'];
@@ -474,7 +488,11 @@ class DeefyRepository
         return false;
     }
 
-    function DeleteActualToken($user_id): void
+    /**
+     * Supprime le token de l'utilisateur et le cookie associé.
+     * @param int $user_id l'id de l'utilisateur
+     */
+    function deleteActualToken($user_id): void
     {
         $query = "DELETE FROM user_tokens WHERE user_id = :userid";  // Supprime le token de la base de données
         $stmt = $this->pdo->prepare($query);
@@ -484,15 +502,17 @@ class DeefyRepository
     }
 
     /**
+     * Permet de déconnecter l'utilisateur.
+     * Supprime le token, la session et redirige vers la page d'accueil.
      * @throws Exception
      */
     function logoutUser(): void
     {
         $user = AuthnProvider::getSignedInUser();
         if ($user['id'] != -1) {
-            $this->DeleteActualToken($user['id']);
+            $this->deleteActualToken($user['id']);
 
-            DeefyRepository::getInstance()->DeleteActualToken($user['id']);
+            DeefyRepository::getInstance()->deleteActualToken($user['id']);
 
             // Supprime la session
             session_unset();
@@ -506,6 +526,9 @@ class DeefyRepository
     }
 
     /**
+     * Permet de connecter l'utilisateur.
+     * @param string $email l'email de l'utilisateur
+     * @param string $passwd2check le mot de passe de l'utilisateur
      * @throws RandomException
      */
     public function login(string $email, string $passwd2check): bool
@@ -521,7 +544,7 @@ class DeefyRepository
                 return false;
             else {
                 $_SESSION['user_info'] = ['id' => $result['id'], 'nom' => $result['username'], 'role' => $result['role']];
-                $this->AfterLoginUser($result['id']); // genère le token
+                $this->afterLoginUser($result['id']); // genère le token
                 return true;
             }
 
@@ -529,6 +552,12 @@ class DeefyRepository
         }
     }
 
+    /**
+     * Permet de vérifier si l'utilisateur est le propriétaire de la playlist.
+     * @param int $id_user l'id de l'utilisateur
+     * @param int $playlistId l'id de la playlist
+     * @return bool true si l'utilisateur est le propriétaire de la playlist, false sinon
+     */
     public function isPlaylistOwner(int $id_user, int $playlistId): bool
     {
         $query = "SELECT COUNT(*) FROM user2playlist WHERE id_user = :id_user AND id_pl = :id_playlist";
@@ -539,9 +568,12 @@ class DeefyRepository
     }
 
     /**
+     * Permet de supprimer une piste d'une playlist.
+     * @param int $playlist_id l'id de la playlist
+     * @param int $place la place de la piste dans la playlist
      * @throws Exception
      */
-    function supprimerTrack($playlist_id, $place): void
+    function supprimerTrack(int $playlist_id, int $place): void
     {
         $query = "SELECT id_track, type FROM playlist2track 
                 WHERE id_pl = :id_playlist AND no_piste_dans_liste = :num";
@@ -565,9 +597,9 @@ class DeefyRepository
         $query = "SELECT filename FROM $type WHERE id = :id_track";
         $stmt = $this->pdo->prepare($query);
         $stmt->execute(['id_track' => $id]);
-        $file_path = $stmt->fetchColumn();
-        $server_path = realpath($_SERVER['DOCUMENT_ROOT'] . "\dewweb\Deefy\sound\\");  // A CHANGER EN CAS DE CHANGEMENT DE CHEMIN
-        $file_path = str_replace("http://localhost\\dewweb\\Deefy\\sound\\", $server_path . "\\", $file_path);
+        $file = $stmt->fetchColumn();
+        $server_path = realpath($_SERVER['DOCUMENT_ROOT'] . "\dewweb\Deefy\sound");  // A CHANGER EN CAS DE CHANGEMENT DE CHEMIN
+        $file_path = $server_path . "\\" . $file;
         if ($file_path && file_exists($file_path)) {
             unlink($file_path);
         } else
@@ -583,5 +615,108 @@ class DeefyRepository
         $stmt->execute(['id_playlist' => $playlist_id, 'position' => $place]);
     }
 
+    /**
+     * Permet de récupérer l'id de l'utilisateur à partir de son email.
+     * @param string $email l'email de l'utilisateur
+     * @return int l'id de l'utilisateur
+     */
+    function getIdUserByEmail(string $email): int
+    {
+        $query = "SELECT id FROM user WHERE email = :email";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['email' => $email]);
+        return $stmt->fetchColumn();
+    }
 
+    /**
+     * Fonction permettant d'insérer dans la base de données un token de réinitialisation de mot de passe.
+     * S'il y a déjà un token pour cet utilisateur, il est remplacé.
+     * @param int $userid l'id de l'utilisateur
+     * @param $token , le token de réinitialisation
+     * @param $expire , la date d'expiration du token
+     * @return void
+     */
+    function insertResetPwdToken(int $userid, $token, $expire): void
+    {
+        try {
+            $query = "INSERT INTO token_resetpwd (user_id, token, expire_at) VALUES (:user_id, :token, :expires_at)";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([
+                'user_id' => $userid,
+                'token' => $token,
+                'expires_at' => $expire
+            ]);
+        } catch (Exception) {
+            $query = "UPDATE token_resetpwd SET token = :token, expire_at = :expires_at WHERE user_id = :user_id";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute([
+                'user_id' => $userid,
+                'token' => $token,
+                'expires_at' => $expire
+            ]);
+        }
+    }
+
+    /**
+     * Permet de vérifier si le token de réinitialisation est valide.
+     * @param $token , le token de réinitialisation
+     * @return bool vrai si le token est présent et non périmé
+     */
+    function checkRstPwdToken($token): bool
+    {
+        $query = "SELECT * FROM token_resetpwd WHERE token = :token";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['token' => $token]);
+
+        //verif la date
+        $row = $stmt->fetch();
+        if (!$row)  // si aucun token correspodant existe
+            return false;
+
+        if (strtotime($row['expire_at']) < time()) {  // si token périmé on le supp
+            $query = "DELETE FROM token_resetpwd WHERE token = :token";
+            $stmt = $this->pdo->prepare($query);
+            $stmt->execute(['token' => $token]);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $token , le token de réinitialisation
+     * @return int l'id de l'utilisateur
+     */
+    function getUserIdByRstToken($token): int
+    {
+        $query = "SELECT user_id FROM token_resetpwd WHERE token = :token";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['token' => $token]);
+        return $stmt->fetchColumn();
+    }
+
+    /**
+     * Permet de changer le mot de passe de l'utilisateur.
+     * @param $iduser , l'id de l'utilisateur
+     * @param $password , le nouveau mot de passe
+     * @param $token , le token de réinitialisation
+     * @return void
+     * @throws RandomException
+     */
+    function changePwd($iduser, $password, $token): void
+    {
+        $hash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);  // 2^12 itérations de hashage
+
+        $query = "UPDATE user SET passwd = :password WHERE id = :user_id";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute(['password' => $hash, 'user_id' => $iduser]);
+        $this->afterLoginUser($this->pdo->lastInsertId());
+
+        // supp le token, on ne change le mdp qu'une fois
+        $query = "DELETE FROM token_resetpwd WHERE token = :token";
+        $deleteStmt = $this->pdo->prepare($query);
+        $deleteStmt->execute(['token' => $token]);
+
+        unset($_SESSION['token']);
+    }
 }

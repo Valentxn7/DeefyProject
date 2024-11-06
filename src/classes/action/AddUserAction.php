@@ -12,7 +12,7 @@ use iutnc\deefy\repository\DeefyRepository;
  * Elle vérifie les données saisies et les enregistre dans la base de données.
  * Elle redirige vers la page d'accueil si l'utilisateur est déjà connecté.
  * Elle affiche un formulaire de création de compte si l'utilisateur n'est pas connecté.
-**/
+ **/
 class AddUserAction extends Action
 {
 
@@ -34,12 +34,10 @@ class AddUserAction extends Action
                 return $rapport;
             } else {
                 $rapport = DeefyRepository::getInstance()->addUser($_POST['email'], $_POST['password'], $_POST['name']);
-                if ($rapport == "OK"){
+                if ($rapport == "OK") {
                     // on revient a la page d'acceuille
                     header("Location: index.php");
-                }
-
-                else if ($rapport == 'a') { // already
+                } else if ($rapport == 'a') { // already
                     return "Un compte existe déjà avec cet email.";
                 } else {
                     return "Erreur lors de la création du compte.";
@@ -47,12 +45,11 @@ class AddUserAction extends Action
             }
 
 
-
         } else if ($this->http_method == "GET") {
 
             return <<<HTML
                     <h2>Créer un compte</h2><br>
-                    <form id="form-add-user" action="index.php?action=add-user" method="POST">
+                    <form id="form-add-user" action="?action=add-user" method="POST">
                         
                         <label for="name">Nom : </label>
                         <input type="text" id="name" name="name" placeholder="Votre nom" required autocomplete="name"> <br>
@@ -71,7 +68,7 @@ class AddUserAction extends Action
                         
                         <input type="submit" value="Valider"> <br>
                         <p>
-                            Déjà un compte ? <a href="?action=login">Connectez-vous ici</a>
+                            Déjà un compte ? <a href="?action=login" class="regToLogButton">Connectez-vous ici</a>
                         </p>
                     </form><br>
 

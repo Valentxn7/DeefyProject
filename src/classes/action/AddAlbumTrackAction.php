@@ -44,10 +44,7 @@ class AddAlbumTrackAction extends Action
 
 
             $base_sys = realpath($_SERVER['DOCUMENT_ROOT']);  // C:\xampp\htdocs pour STOCKER LES FICHIERS
-            $base_access = "http://" . $_SERVER['HTTP_HOST'];  // http://localhost/ pour ACCEDER AUX FICHIERS COTE CLIENT
-
             $upload_dir = $base_sys . "\dewweb\Deefy\sound\\";  // C:\xampp\htdocs\DevWebS3\DeefyProject\audio\  pour STOCK
-            $access_dir = $base_access . "\dewweb\Deefy\sound\\";  // http://localhost/DevWebS3\DeefyProject\audio\  pour ACCES
 
             $autorise = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav', 'audio/aac'];
 
@@ -59,10 +56,9 @@ class AddAlbumTrackAction extends Action
                     $extension = pathinfo($_FILES['inputfile']['name'], PATHINFO_EXTENSION);
                     $filename = uniqid();
                     $dest = $upload_dir . $filename . '.' . $extension; // pour stocker le fichier
-                    $access = $access_dir . $filename . '.' . $extension;  // pour accéder au fichier
-                    //echo $dest;
+
                     if (move_uploaded_file($_FILES['inputfile']['tmp_name'], $dest)) {  // upload_dir pour stocker le fichier
-                        $track = new AlbumTrack(pathinfo($_POST['title'], PATHINFO_FILENAME), $access, $_POST['album'], $_POST['numero']);
+                        $track = new AlbumTrack(pathinfo($_POST['title'], PATHINFO_FILENAME), $filename . '.' . $extension, $_POST['album'], $_POST['numero']);
 
                         $track->genre = $_POST['genre'];
                         $track->annee = $_POST['date'];
@@ -90,7 +86,7 @@ class AddAlbumTrackAction extends Action
         } else if ($this->http_method == "GET") {
             return <<<HTML
                     <h2>Ajouter une musique à la playlist</h2><br>
-                    <form id="form-add-track" action="index.php?action=add-Albumtrack" method="POST" enctype="multipart/form-data">
+                    <form id="form-add-track" action="?action=add-Albumtrack" method="POST" enctype="multipart/form-data">
                
                         <label for="inputfile">Fichier : </label>
                         <input type="file" id="inputfile" name="inputfile" required aria-label="Ajouter un fichier audio" accept=".mp3, .wav, .ogg, .aac"> <br><br>

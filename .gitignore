@@ -1,7 +1,16 @@
 *.mp3
-
-
-
+*.ini
+*.idea
+Config.db.ini
+Config.email.ini
+*.wav
+.gitignore
+composer.lock
+*.lock
+vendor
+/vendor/
+*.iml
+*.xml
 # Compiled class file
 *.class
 
@@ -26,3 +35,4 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+

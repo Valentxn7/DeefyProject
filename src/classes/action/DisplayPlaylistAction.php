@@ -52,7 +52,7 @@ class DisplayPlaylistAction extends Action
 
             $_SESSION['playlist'] = $playlist;
             $rend = new AudioListRenderer($playlist);
-            $rend = $rend->render(1);
+            $rend = $rend->render(1, true);
 
             $_SERVER['REQUEST_METHOD'] = "GET";  // pr demander les form (et oui pas betos)
             $form1 = new AddPodcastTrackAction();
@@ -70,7 +70,7 @@ HTML;
 
         } else {
             $rend = new AudioListRenderer($playlist);
-            $rend = $rend->render(1);
+            $rend = $rend->render(1, false);
             $form1 = "";
             $form2 = "";
             $supp = "";
@@ -180,29 +180,4 @@ HTML;
         </div>
         HTML;
     }
-
-
-
-//    public function execute(): string
-//    {
-//        $playlist = $_SESSION['playlist'];
-//        $rend = new AudioListRenderer($playlist);
-//        $html = $rend->render(10);
-//        return $html;
-//    }
-
-    /**
-     * public function execute(): string
-     * {
-     * $playlist = $_SESSION['playlist'];
-     * $tracks = $playlist->getTracks();
-     * $html = "<h1>Playlist : " . $playlist->getName() . "</h1>";
-     * $html .= "<ul>";
-     * foreach ($tracks as $track) {
-     * $html .= "<li>" . $track->getTitle() . "</li>";
-     * }
-     * $html .= "</ul>";
-     * return $html;
-     * }
-     */
 }

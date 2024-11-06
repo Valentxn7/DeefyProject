@@ -55,13 +55,15 @@ class LoginAction extends Action
     {
         return <<<HTML
             <h2>Connexion</h2><br>
-            <form id="form-login" action="index.php?action=login" method="POST">
+            <form id="form-login" action="?action=login" method="POST">
                 <label for="email">Email : </label>
                 <input type="email" id="email" name="email" required autocomplete="email"> <br>
                 
                 <label for="password">Mot de passe : </label>
-                <input type="password" id="password" name="password" required> <br><br>
-                
+                <input type="password" id="password" name="password" required> <br>
+                <a href="?action=reset-password" class="loginToForgot">
+                Mot de passe oublié ?
+                </a> <br><br>
                 <input type="submit" value="Se connecter"> <br>
             </form><br>
             <a class="add_user_button" href="?action=add-user">Créer un compte</a><br><br>

@@ -11,6 +11,12 @@ interface Renderer
     const COMPACT = "1";
     const LONG = '3';
 
-    public function render(int $selector, $index = null): string;
+    /**
+     * @param int $selector 1 for long, 2 for preview
+     * @param bool $isPrivate vrai si la playlist appartient à un user
+     * @param $index index de la piste (pour la suppression)
+     * @return string le rendu
+     */
+    public function render(int $selector, bool $isPrivate, $index = null): string;
 
 }

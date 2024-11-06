@@ -17,13 +17,13 @@ class Playlist extends AudioList
          * $this->duree = $this->duree + $audio->duree;
          **/
         array_push($this->liste, $audio);
-        $this->MAJ_liste_duree_nb();
+        $this->maj_liste_duree_nb();
     }
 
     public function supprimer(int $ind): void
     {
         array_splice($this->liste, $ind, 1);
-        $this->MAJ_liste_duree_nb();
+        $this->maj_liste_duree_nb();
     }
 
     // ajouter table array diff
@@ -31,7 +31,7 @@ class Playlist extends AudioList
     {
         $add = array_diff($this->liste, $list->liste);
         $this->liste = array_combine($this->liste, $add);
-        $this->MAJ_liste_duree_nb();
+        $this->maj_liste_duree_nb();
     }
 
 }

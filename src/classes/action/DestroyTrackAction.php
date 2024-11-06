@@ -19,7 +19,7 @@ class DestroyTrackAction extends Action
         // pas besoin de verif les perms, il ne peut pas avoir de playlist en sessions sans être connecté
         // de plus, on vérifie la propriété de la playlist quand on la met en session (display)
         if (empty($_SESSION['playlist'])) {
-            return "Veuillez selectionner une playlist.";
+            return "Veuillez selectionner une playlist qui vous appartient.";
         }
         if (empty($_GET['pos'])) {
             return "Veuillez selectionner présent dans votre playlist.";

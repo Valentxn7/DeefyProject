@@ -12,7 +12,7 @@ use iutnc\deefy\repository\DeefyRepository;
  */
 class DefaultAction extends Action
 {
-    private static String $phrase = "Bienvenue, ";
+    private static string $phrase = "Bienvenue, ";
 
     /**
      * @throws Exception
@@ -20,14 +20,13 @@ class DefaultAction extends Action
     public function execute(): string
     {
         unset($_SESSION['playlist']);
-
-        DeefyRepository::getInstance()->VerifToken();
+        DeefyRepository::getInstance()->verifToken();
         $user = AuthnProvider::getSignedInUser();
         $username = $user['nom'];
         return "<h3>" . DefaultAction::$phrase . $username . " !</h3>";
     }
 
-    public static function setPhrase(String $p): void
+    public static function setPhrase(string $p): void
     {
         DefaultAction::$phrase = $p;
     }

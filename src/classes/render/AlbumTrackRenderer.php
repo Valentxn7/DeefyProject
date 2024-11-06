@@ -19,11 +19,13 @@ class AlbumTrackRenderer implements Renderer
     }
 
     /**
-     * Rendu d'une piste d'album.
-     * @param int $selector le sélecteur de rendu, Renderer::COMPACT ou Renderer::LONG
-     * @return string le rendu de la piste d'album
+     * Rendu de la liste audio.
+     * @param int $selector, 1 for long, 2 for preview
+     * @param bool $isPrivate, vrai si la playlist appartient à un user
+     * @param null $index, index de la piste (pour la suppression)
+     * @return string le rendu
      */
-    public function render(int $selector, $index = null): string
+    public function render(int $selector, bool $isPrivate, $index = null): string
     {
         $duree_seconds = $this->albumTrack->duree;  // Formate en MM:SS
         $minutes = floor($duree_seconds / 60);
@@ -46,13 +48,23 @@ class AlbumTrackRenderer implements Renderer
                 $ret .= ($this->albumTrack->annee == AudioList::NO_ANNEE) ? "" : " - {$this->albumTrack->annee}";
 
                 // merci internet d'avoir créer des x plus petits et jolie
-                $supp = <<<HTML
-                                    <a href='index.php?action=delete-track&pos=$index'>
-                                    <button class="track-delete-button" title="Supprimer">×</button>
+                if ($isPrivate) {
+                    $supp = <<<HTML
+                        <div class="audio-player">
+                                    <a href='index.php?action=delete-track&pos=$index' class="track-delete-button">
+                                    ×
                                     </a>
                         HTML;
+
+                    $ferm = "</div>";
+                } else {
+                    $supp = "";
+                    $ferm = "";
+                }
+                $path = "sound\\" . $this->albumTrack->nom_fich;
+
                 $ret .= " - " . sprintf("%02d:%02d", $minutes, $seconds) . "<br> <br> 
-                        $supp <audio id='audioPlayer' controls src='{$this->albumTrack->nom_fich}'> </audio> <br>";
+                        $supp <audio id='audioPlayer' controls src='{$path}'> </audio> {$ferm} <br>";
                 return $ret;
 
             default:

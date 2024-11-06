@@ -68,7 +68,7 @@ class AllPlaylistAction extends Action
         foreach ($pubList as $pl) {
             $html .= "<a href='index.php?action=display-playlist&id={$pl['id']}'><div class='playlist'>";
             $rend = new AudioListRenderer($pl['pl']);
-            $html .= $rend->render(2);
+            $html .= $rend->render(2, $pl['pl']->isPrivate);
             $html .= "</div> </a> <br>";
         }
         $html .= "</div>";
@@ -78,7 +78,7 @@ class AllPlaylistAction extends Action
         foreach ($privList as $pl) {
             $html .= "<a href='index.php?action=display-playlist&id={$pl['id']}'><div class='playlist'>";
             $rend = new AudioListRenderer($pl['pl']);
-            $html .= $rend->render(2);
+            $html .= $rend->render(2, $pl['pl']->isPrivate);
             $html .= "</div> </a> <br>";
         }
         $html .= "</div>";

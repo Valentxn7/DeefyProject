@@ -22,10 +22,12 @@ class AudioListRenderer implements Renderer
 
     /**
      * Rendu de la liste audio.
-     * @param int $selector 1 for long, 2 for preview
-     * @return string
+     * @param int $selector, 1 for long, 2 for preview
+     * @param bool $isPrivate, vrai si la playlist appartient à un user
+     * @param null $index, index de la piste (pour la suppression)
+     * @return string le rendu
      */
-    public function render(int $selector, $index = null): string
+    public function render(int $selector, bool $isPrivate, $index = null): string
     {
         if (sizeof($this->audioList->liste) === 0) {
             return "La playlist {$this->audioList->nom} est vide.";
@@ -44,9 +46,9 @@ class AudioListRenderer implements Renderer
                     }
                     if ($selector == 1) {
                         $index = $i + 1;
-                        $cont .= $rend->render(Renderer::LONG, $index);
+                        $cont .= $rend->render(Renderer::LONG, $isPrivate, $index);
                     } else
-                        $cont .= $rend->render(Renderer::COMPACT);
+                        $cont .= $rend->render(Renderer::COMPACT, $isPrivate);
                 }
 
             } else {  // preview
@@ -58,7 +60,7 @@ class AudioListRenderer implements Renderer
                 $cont .= "...<br>";
             }
         }
-        $cont .= "<br>nb pistes: " . $this->audioList->nbpiste;
+        $cont .= "<br>nb pistes: " . $this->audioList->nbPiste;
 
         $duree_seconds = $this->audioList->duree;  // Formate en MM:SS
         $minutes = floor($duree_seconds / 60);

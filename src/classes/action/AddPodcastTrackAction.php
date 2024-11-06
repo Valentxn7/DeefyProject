@@ -41,13 +41,9 @@ class AddPodcastTrackAction extends Action
                 return "Vous n'êtes pas autorisé à fouiller dans les affaires des autres.";
             }
 
-
-
             $base_sys = realpath($_SERVER['DOCUMENT_ROOT']);  // C:\xampp\htdocs pour STOCKER LES FICHIERS
-            $base_access = "http://" . $_SERVER['HTTP_HOST'];  // http://localhost/ pour ACCEDER AUX FICHIERS COTE CLIENT
 
             $upload_dir = $base_sys . "\dewweb\Deefy\sound\\";  // C:\xampp\htdocs\DevWebS3\DeefyProject\audio\  pour STOCK
-            $access_dir = $base_access . "\dewweb\Deefy\sound\\";  // http://localhost/DevWebS3\DeefyProject\audio\  pour ACCES
 
             $autorise = ['audio/mpeg', 'audio/mp3', 'audio/ogg', 'audio/wav', 'audio/aac'];
 
@@ -59,16 +55,14 @@ class AddPodcastTrackAction extends Action
                     $extension = pathinfo($_FILES['inputfile']['name'], PATHINFO_EXTENSION);
                     $filename = uniqid();
                     $dest = $upload_dir . $filename . '.' . $extension; // pour stocker le fichier
-                    $access = $access_dir . $filename . '.' . $extension;  // pour accéder au fichier
                     //echo $dest;
                     if (move_uploaded_file($_FILES['inputfile']['tmp_name'], $dest)) {  // upload_dir pour stocker le fichier
-                        $track = new PodcastTrack(pathinfo($_POST['title'], PATHINFO_FILENAME), $access);
+                        $track = new PodcastTrack(pathinfo($_POST['title'], PATHINFO_FILENAME), $filename . '.' . $extension);
 
                         $track->genre = $_POST['genre'];
                         $track->date = $_POST['date'];
                         $track->duree = $_POST['duree'];
                         $track->auteur = $_POST['artist'];
-
 
 
                         // ça l'ajoute a la fois dans la base pod et dans la playlist
@@ -90,7 +84,7 @@ class AddPodcastTrackAction extends Action
         } else if ($this->http_method == "GET") {
             return <<<HTML
                     <h2>Ajouter un podcast à la playlist</h2><br>
-                    <form id="form-add-track" action="index.php?action=add-Podcasttrack" method="POST" enctype="multipart/form-data">
+                    <form id="form-add-track" action="?action=add-Podcasttrack" method="POST" enctype="multipart/form-data">
                
                         <label for="inputfile">Fichier : </label>
                         <input type="file" id="inputfile" name="inputfile" required aria-label="Ajouter un fichier audio" accept=".mp3, .wav, .ogg, .aac"> <br><br>
@@ -151,9 +145,9 @@ HTML;
             $_POST['genre'] = !empty($_POST['genre']) ? filter_var($_POST['genre'], FILTER_SANITIZE_SPECIAL_CHARS)
                 : (isset($fileInfo['tags']['id3v2']['genre'][0]) ? filter_var($fileInfo['tags']['id3v2']['genre'][0], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_GENRE);
 
-            $_POST['artist'] = !empty($_POST['artist']) ? filter_var($_POST['artist'], FILTER_SANITIZE_SPECIAL_CHARS): (isset($fileInfo['tags']['id3v2']['artist'][0]) ? filter_var($fileInfo['tags']['id3v2']['artist'][0], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_AUTEUR);
+            $_POST['artist'] = !empty($_POST['artist']) ? filter_var($_POST['artist'], FILTER_SANITIZE_SPECIAL_CHARS) : (isset($fileInfo['tags']['id3v2']['artist'][0]) ? filter_var($fileInfo['tags']['id3v2']['artist'][0], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_AUTEUR);
 
-            $_POST['date'] =  !empty($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_NUMBER_INT) : AudioList::NO_DATE;
+            $_POST['date'] = !empty($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_NUMBER_INT) : AudioList::NO_DATE;
             /*$_POST['date'] = !empty($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_SPECIAL_CHARS)
                 : (isset($fileInfo['tags']['id3v2']['year'][0]) ? filter_var($fileInfo['tags']['id3v2']['year'][0], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_DATE);*/
 
@@ -169,7 +163,7 @@ HTML;
 
             $_POST['genre'] = !empty($_POST['genre']) ? filter_var($_POST['genre'], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_GENRE;
             $_POST['artist'] = !empty($_POST['artist']) ? filter_var($_POST['artist'], FILTER_SANITIZE_SPECIAL_CHARS) : AudioList::NO_AUTEUR;
-            $_POST['date'] =  !empty($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_NUMBER_INT) : AudioList::NO_DATE;
+            $_POST['date'] = !empty($_POST['date']) ? filter_var($_POST['date'], FILTER_SANITIZE_NUMBER_INT) : AudioList::NO_DATE;
             $_POST['title'] = !empty($_POST['title']) ? filter_var($_POST['title'], FILTER_SANITIZE_SPECIAL_CHARS)
                 : filter_var($_FILES['inputfile']['name'], FILTER_SANITIZE_SPECIAL_CHARS);
 

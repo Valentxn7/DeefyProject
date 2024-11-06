@@ -17,7 +17,7 @@ abstract class AudioList
     public const NO_ANNEE = 0;
     public const NO_NUMERO = -1;
     protected string $nom;
-    protected int $nbpiste, $duree;
+    protected int $nbPiste, $duree;
     protected array $liste;
     protected int $id_bdd;
     protected bool $isPrivate = true;
@@ -32,10 +32,10 @@ abstract class AudioList
         $this->nom = $name;
         $this->liste = $arr;
         $this->duree = 0;
-        $this->nbpiste = 0;
+        $this->nbPiste = 0;
         for ($i = 1; $i <= sizeof($arr); $i++) {
             $this->duree = $this->duree + $arr[$i]->duree;
-            $this->nbpiste = $this->nbpiste + 1;
+            $this->nbPiste = $this->nbPiste + 1;
         }
     }
 
@@ -53,13 +53,13 @@ abstract class AudioList
      * Pemet d'actualiser la durée et le nombre de pistes de la liste.
      * @return void
      */
-    public function MAJ_liste_duree_nb(): void
+    public function maj_liste_duree_nb(): void
     {
         $this->duree = 0;
-        $this->nbpiste = 0;
+        $this->nbPiste = 0;
         for ($i = 0; $i < count($this->liste); $i++) {
             $this->duree = $this->duree + $this->liste[$i]->duree;
-            $this->nbpiste = $this->nbpiste + 1;
+            $this->nbPiste = $this->nbPiste + 1;
         }
     }
 

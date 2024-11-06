@@ -52,7 +52,7 @@ class AddPlaylistAction extends Action
 
                     
                     <h2>Ajouter une nouvelle playlist</h2><br>
-                    <form action="index.php?action=add-playlist" method="POST">
+                    <form action="?action=add-playlist" method="POST">
                 
                         <label for="title">Titre de la playlist : </label>
                         <input type="text" id="title" name="title" required> <br><br>

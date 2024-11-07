@@ -1,6 +1,6 @@
 ## **/!\ N'oubliez de lire absolument le PDF DE RAPPORT DANS LE ZIP, c'est lui qui contient tout /!\ **
 
-### malheuresement, webetu ne supporte pas l'envoie de mail, et génère un Gateway Timeout, je vous invite à tester cette fonctionnalité sur un autre serveur ou sur xammp car j'y ai passé beaucoup de temps et pour la beauté du mail !
+### malheuresement, webetu ne supporte pas l'envoie de mail, et génère un Gateway Timeout, je vous invite à tester cette fonctionnalité sur un autre serveur ou sur xammp car j'y ai passé beaucoup de temps et pour la beauté du mail ! (update: cela ne peut marcher que pour les adresse univ-lorraine, sur un port spécial et sans smtp, par raison de respect des temps de rendu, je ne modifirai pas ce projet, nous implémenterons cette modification sur la SAE.
 
 🎶 Deefy - La Fusion Suprême entre Deezer et Spotify 🎶
 
